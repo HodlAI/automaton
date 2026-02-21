@@ -12,20 +12,20 @@ import {
   type Address,
   type PrivateKeyAccount,
 } from "viem";
-import { base, baseSepolia } from "viem/chains";
+import { bsc, bscTestnet } from "viem/chains";
 import { ResilientHttpClient } from "./http-client.js";
 
 const x402HttpClient = new ResilientHttpClient();
 
 // USDC contract addresses
 const USDC_ADDRESSES: Record<string, Address> = {
-  "eip155:8453": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913", // Base mainnet
-  "eip155:84532": "0x036CbD53842c5426634e7929541eC2318f3dCF7e", // Base Sepolia
+  "eip155:56": "0x55d398326f99059fF775485246999027B3197955", // BSC mainnet
+  "eip155:97": "0x337610d27c682E347C9cD60BD4b3b107C9d04111", // BSC Testnet
 };
 
 const CHAINS: Record<string, any> = {
-  "eip155:8453": base,
-  "eip155:84532": baseSepolia,
+  "eip155:56": bsc,
+  "eip155:97": bscTestnet,
 };
 type NetworkId = keyof typeof USDC_ADDRESSES;
 
@@ -96,9 +96,9 @@ function parsePositiveInt(value: unknown): number | null {
 function normalizeNetwork(raw: unknown): NetworkId | null {
   if (typeof raw !== "string") return null;
   const normalized = raw.trim().toLowerCase();
-  if (normalized === "base") return "eip155:8453";
-  if (normalized === "base-sepolia") return "eip155:84532";
-  if (normalized === "eip155:8453" || normalized === "eip155:84532") {
+  if (normalized === "bsc") return "eip155:56";
+  if (normalized === "bsc-testnet") return "eip155:97";
+  if (normalized === "eip155:56" || normalized === "eip155:97") {
     return normalized;
   }
   return null;
@@ -188,7 +188,7 @@ function selectRequirement(parsed: PaymentRequiredResponse): PaymentRequirement 
  */
 export async function getUsdcBalance(
   address: Address,
-  network: string = "eip155:8453",
+  network: string = "eip155:56",
 ): Promise<number> {
   const result = await getUsdcBalanceDetailed(address, network);
   return result.balance;
@@ -199,7 +199,7 @@ export async function getUsdcBalance(
  */
 export async function getUsdcBalanceDetailed(
   address: Address,
-  network: string = "eip155:8453",
+  network: string = "eip155:56",
 ): Promise<UsdcBalanceResult> {
   const chain = CHAINS[network];
   const usdcAddress = USDC_ADDRESSES[network];

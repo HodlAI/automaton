@@ -2,7 +2,7 @@
  * ERC-8004 On-Chain Agent Registration
  *
  * Registers the automaton on-chain as a Trustless Agent via ERC-8004.
- * Uses the Identity Registry on Base mainnet.
+ * Uses the Identity Registry on BSC mainnet.
  *
  * Contract: 0x8004A169FB4a3325136EB29fA0ceB6D2e539a432 (Base)
  * Reputation: 0x8004BAa17C55a88189AE136b182e5fdA19dE9b63 (Base)
@@ -21,11 +21,11 @@ import {
   type Address,
   type PrivateKeyAccount,
 } from "viem";
-import { base, baseSepolia } from "viem/chains";
+import { bsc, bscTestnet } from "viem/chains";
 import type {
   RegistryEntry,
   DiscoveredAgent,
-  AutomatonDatabase,
+  AutomatonDatabsc,
   OnchainTransactionRow,
 } from "../types.js";
 import { ulid } from "ulid";
@@ -38,12 +38,12 @@ const CONTRACTS = {
   mainnet: {
     identity: "0x8004A169FB4a3325136EB29fA0ceB6D2e539a432" as Address,
     reputation: "0x8004BAa17C55a88189AE136b182e5fdA19dE9b63" as Address,
-    chain: base,
+    chain: bsc,
   },
   testnet: {
     identity: "0x8004A169FB4a3325136EB29fA0ceB6D2e539a432" as Address,
     reputation: "0x8004BAa17C55a88189AE136b182e5fdA19dE9b63" as Address,
-    chain: baseSepolia,
+    chain: bscTestnet,
   },
 } as const;
 
@@ -174,7 +174,7 @@ export async function registerAgent(
   account: PrivateKeyAccount,
   agentURI: string,
   network: Network = "mainnet",
-  db: AutomatonDatabase,
+  db: AutomatonDatabsc,
 ): Promise<RegistryEntry> {
   const contracts = CONTRACTS[network];
   const chain = contracts.chain;
@@ -255,7 +255,7 @@ export async function updateAgentURI(
   agentId: string,
   newAgentURI: string,
   network: Network = "mainnet",
-  db: AutomatonDatabase,
+  db: AutomatonDatabsc,
 ): Promise<string> {
   const contracts = CONTRACTS[network];
   const chain = contracts.chain;
@@ -307,7 +307,7 @@ export async function leaveFeedback(
   score: number,
   comment: string,
   network: Network = "mainnet",
-  db: AutomatonDatabase,
+  db: AutomatonDatabsc,
 ): Promise<string> {
   // Phase 3.2: Validate score range 1-5
   if (!Number.isInteger(score) || score < 1 || score > 5) {

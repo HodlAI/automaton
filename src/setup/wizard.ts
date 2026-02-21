@@ -200,7 +200,7 @@ function showFundingPanel(address: string): void {
   console.log(chalk.cyan(`  │${pad("  1. Transfer Conway credits", w)}│`));
   console.log(chalk.cyan(`  │${pad("     conway credits transfer <address> <amount>", w)}│`));
   console.log(chalk.cyan(`  │${" ".repeat(w)}│`));
-  console.log(chalk.cyan(`  │${pad("  2. Send USDC on Base directly to the address above", w)}│`));
+  console.log(chalk.cyan(`  │${pad("  2. Send USDT on BSC directly to the address above", w)}│`));
   console.log(chalk.cyan(`  │${" ".repeat(w)}│`));
   console.log(chalk.cyan(`  │${pad("  3. Fund via Conway Cloud dashboard", w)}│`));
   console.log(chalk.cyan(`  │${pad("     https://app.hodlai.fun", w)}│`));

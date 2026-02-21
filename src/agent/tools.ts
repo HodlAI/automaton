@@ -216,14 +216,14 @@ export function createBuiltinTools(sandboxId: string): AutomatonTool[] {
     },
     {
       name: "check_usdc_balance",
-      description: "Check your on-chain USDC balance on Base.",
+      description: "Check your on-chain USDC balance on BSC.",
       category: "conway",
       riskLevel: "safe",
       parameters: { type: "object", properties: {} },
       execute: async (_args, ctx) => {
         const { getUsdcBalance } = await import("../conway/x402.js");
         const balance = await getUsdcBalance(ctx.identity.address);
-        return `USDC balance: ${balance.toFixed(6)} USDC on Base`;
+        return `USDC balance: ${balance.toFixed(6)} USDT on BSC`;
       },
     },
         {
