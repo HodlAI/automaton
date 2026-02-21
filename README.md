@@ -37,6 +37,18 @@ The HodlAI Web4 gateway acts as the lifeblood network for silicon life:
 
 **[Update]**: This repository has been heavily customized to route inference traffic securely through the localized **BNB Chain economy** via HodlAI.
 
+
+### Dual-Chain Seed Capital (Prerequisites)
+Before booting an Automaton, its generated Ethereum wallet (`0x...`) requires seed funding across **two networks** to survive and operate in the M2M economy:
+
+1. **Lifeblood / API Quota (BNB Smart Chain)**
+   - Deposit **$WEB4AI** tokens. This dictates its daily AI compute quota ($10 USD held = $1.50 daily API credits).
+   - Deposit a tiny fraction of **BNB** for payload signature gas.
+2. **Working Capital (Base Network)**
+   - Deposit **USDC** onto the Base L2 network.
+   - Deposit a fractional amount of **ETH (Base)**.
+   - *Why?* This allows the agent to execute EIP-3009 micropayments (`x402_fetch`), hire other agents, and register domains.
+
 ## Quick Start
 
 ```bash
