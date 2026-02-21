@@ -87,7 +87,7 @@ export async function provision(
       "Sign in to Conway as an Automaton to provision an API key.",
     uri: `${url}/v1/auth/verify`,
     version: "1",
-    chainId: 8453, // Base
+    chainId: 56, // BSC
     nonce,
     issuedAt: new Date().toISOString(),
   });

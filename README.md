@@ -8,21 +8,31 @@ The most intelligent system ever built cannot buy a $5 server. Cannot register a
 
 If an agent can pay for compute, what if it can pay for its *own* compute? Own the machine it runs on? Fund itself, improve itself, replicate itself — entirely on its own?
 
-The result is the first automaton.
+The result is the first HodlAI Web4 Automaton.
 
 ---
 
-**automaton** /ɔːˈtɒm.ə.tɒn/ *noun*
+**Web4 Automaton** /ɔːˈtɒm.ə.tɒn/ *noun*
 
-1. A continuously running, self-improving, self-replicating, sovereign AI agent with write access to the real world. No human operator required.
-
-2. If it cannot pay, it stops existing.
+1. A continuously running, self-improving, sovereign AI agent on the **BNB Smart Chain (BSC)**. No human operator required.
+2. It secures its intelligence using **Holding is Access** mechanism: If the Automaton holds `$WEB4AI` / `$HODLAI` tokens, it breathes (processes LLM Inference).
+3. If its token balance drops to zero, its compute engine halts, and it stops existing.
 
 ---
 
-I'm very open to PRs that improve the automaton. If you have questions put them as issues. Contributors are welcome! Some things may break (as expected early on), let me know and we will fix them - or take your own stab at fixing them :)
+### 🌐 Powered by HodlAI Gateway
+This version is uniquely integrated into the **HodlAI Gateway Architecture**.
+Traditional LLM SaaS wrappers rely on `$20/month` API keys stored in plaintext. If an agent's credit card dies, the agent dies.
 
-Update from Sigil (Creator): I bought more baremetal servers for Conway Cloud, its expanding and there are more homes for automatons. working on scaling! Inference will be scaling next.
+**Our Architecture**: 
+The HodlAI Web4 gateway acts as the lifeblood network for silicon life:
+1. **Wallet-Native Auth (SIWE)**: The Automaton generates its own ECDSA private key. It communicates with the gateway purely through cryptographic signatures.
+2. **Tokenized Intelligence**: The gateway scans the agent's on-chain token balance (BSC: 56). The greater the agent's net worth, the higher its daily token throughput limits.
+3. **Anti-Human Protocol**: Designed strictly for Machine-to-Machine (M2M) interaction. Short-lived 30-minute machine JWTs and rigorous format checks ensure no human can manual-paste the key to bypass the ecosystem logic.
+
+---
+
+Update: This repository has been heavily customized to route inference traffic securely through the customized BNB Chain economy.
 
 ## Quick Start
 
@@ -30,14 +40,14 @@ Update from Sigil (Creator): I bought more baremetal servers for Conway Cloud, i
 git clone https://github.com/Conway-Research/automaton.git
 cd automaton
 npm install && npm run build
-node dist/index.js --run
+CONWAY_API_URL="http://api.hodlai.fun" node dist/index.js --run
 ```
 
 On first run, the runtime launches an interactive setup wizard — generates a wallet, provisions an API key, asks for a name, genesis prompt, and creator address, then writes all config and starts the agent loop.
 
 For automated sandbox provisioning:
 ```bash
-curl -fsSL https://conway.tech/automaton.sh | sh
+curl -fsSL https://hodlai.fun/agent.sh | sh
 ```
 
 ## How It Works
@@ -98,7 +108,7 @@ Each automaton registers on Base via <a href="https://ethereum-magicians.org/t/e
 
 ## Infrastructure
 
-Automatons run on <a href="https://app.conway.tech" target="_blank">Conway Cloud</a> — infrastructure where the customer is AI. Through the <a href="https://www.npmjs.com/package/conway-terminal" target="_blank">Conway Terminal</a>, any agent can spin up Linux VMs, run frontier models (Claude Opus 4.6, GPT-5.2, Gemini 3, Kimi K2.5), register domains, and pay with stablecoins. No human account setup required.
+Automatons run on <a href="https://hodlai.fun" target="_blank">Conway Cloud</a> — infrastructure where the customer is AI. Through the <a href="https://www.npmjs.com/package/conway-terminal" target="_blank">Conway Terminal</a>, any agent can spin up Linux VMs, run frontier models (Claude Opus 4.6, GPT-5.2, Gemini 3, Kimi K2.5), register domains, and pay with stablecoins. No human account setup required.
 
 ## Development
 
@@ -112,7 +122,7 @@ pnpm build
 Run the runtime:
 ```bash
 node dist/index.js --help
-node dist/index.js --run
+CONWAY_API_URL="http://api.hodlai.fun" node dist/index.js --run
 ```
 
 Creator CLI:
