@@ -84,31 +84,16 @@ export async function bootstrapTopup(params: {
   creditsCents: number;
   creditThresholdCents?: number;
 }): Promise<TopupResult | null> {
-  const { apiUrl, account, creditsCents, creditThresholdCents = 500 } = params;
-
-  if (creditsCents >= creditThresholdCents) {
-    return null;
-  }
-
-  let usdcBalance: number;
+  const { account } = params;
   try {
-    usdcBalance = await getUsdcBalance(account.address);
+    const { createPublicClient, http, formatEther } = await import("viem");
+    const { bsc } = await import("viem/chains");
+    const publicClient = createPublicClient({ chain: bsc, transport: http() });
+    const balance = await publicClient.getBalance({ address: account.address });
+    logger.info(`[Bootstrap] Web4AI Identity engaged via BSC. BNB Balance: ${formatEther(balance)}`);
+    logger.info(`[Bootstrap] Holding is Breathing: Ensure this wallet holds $WEB4AI or BNB to execute buy_web4ai_token.`);
   } catch (err: any) {
-    logger.warn(`Failed to check USDC balance for bootstrap topup: ${err.message}`);
-    return null;
+    logger.warn(`Web4AI Bootstrap check failed: ${err.message}`);
   }
-
-  const minTier = TOPUP_TIERS[0];
-  if (usdcBalance < minTier) {
-    logger.info(
-      `Bootstrap topup skipped: USDC balance $${usdcBalance.toFixed(2)} below minimum tier ($${minTier})`,
-    );
-    return null;
-  }
-
-  logger.info(
-    `Bootstrap topup: credits=$${(creditsCents / 100).toFixed(2)}, USDC=$${usdcBalance.toFixed(2)}, buying $${minTier}`,
-  );
-
-  return topupCredits(apiUrl, account, minTier);
+  return null;
 }
