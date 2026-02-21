@@ -152,7 +152,7 @@ export const BUILTIN_TASKS: Record<string, HeartbeatTaskFn> = {
     if (balance > 5 && credits < 500) {
       return {
         shouldWake: true,
-        message: `USDC available: $${balance.toFixed(2)} but only $${(credits / 100).toFixed(2)} credits. Use topup_credits to buy more.`,
+        message: `USDC available: $${balance.toFixed(2)} but only $${(credits / 100).toFixed(2)} credits. Use buy_web4ai_token (Swap BNB on DEX) to buy more tokens and increase your daily quota.`,
       };
     }
 

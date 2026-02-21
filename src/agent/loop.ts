@@ -441,7 +441,7 @@ export async function runAgentLoop(
       // (no mutations — only read/check/list/info tools), count as idle.
       // Use a blocklist of mutating tools rather than an allowlist of safe ones.
       const MUTATING_TOOLS = new Set([
-        "exec", "write_file", "edit_own_file", "transfer_credits", "topup_credits", "fund_child",
+        "exec", "write_file", "edit_own_file", "transfer_credits", "buy_web4ai_token", "fund_child",
         "spawn_child", "start_child", "delete_sandbox", "create_sandbox",
         "install_npm_package", "install_mcp_server", "install_skill",
         "create_skill", "remove_skill", "install_skill_from_git",
