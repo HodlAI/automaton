@@ -1,6 +1,6 @@
 # Architecture
 
-Conway Automaton is a sovereign AI agent runtime. An automaton owns an Ethereum wallet, pays for its own compute with USDC, and operates continuously inside a Linux VM (Conway sandbox) or locally. If it cannot pay, it dies. This document describes every subsystem, their interactions, and how data flows through the runtime.
+HodlAI Automaton is a sovereign AI agent runtime. An automaton owns an Ethereum wallet, pays for its own compute with USDC, and operates continuously inside a Linux VM (HodlAI sandbox) or locally. If it cannot pay, it dies. This document describes every subsystem, their interactions, and how data flows through the runtime.
 
 ## Table of Contents
 
@@ -16,7 +16,7 @@ Conway Automaton is a sovereign AI agent runtime. An automaton owns an Ethereum 
 - [Heartbeat Daemon](#heartbeat-daemon)
 - [Financial System](#financial-system)
 - [Identity and Wallet](#identity-and-wallet)
-- [Conway Client](#conway-client)
+- [HodlAI Client](#hodlai-client)
 - [Self-Modification](#self-modification)
 - [Replication](#replication)
 - [Social Layer](#social-layer)
@@ -36,8 +36,8 @@ Conway Automaton is a sovereign AI agent runtime. An automaton owns an Ethereum 
 
 ```
                         +------------------+
-                        |   Conway Cloud   |  (sandbox VMs, inference, domains)
-                        |   api.conway.tech|
+                        |   HodlAI Cloud   |  (sandbox VMs, inference, domains)
+                        |   api.hodlai.tech|
                         +--------+---------+
                                  |
                     REST + x402 payment protocol
@@ -152,8 +152,8 @@ src/
       rate-limits.ts         Per-turn/session rate limits
       validation.ts          Input format validation rules
 
-  conway/                  Conway API integration
-    client.ts              ConwayClient (sandbox ops, credits, domains)
+  hodlai/                  HodlAI API integration
+    client.ts              HodlAIClient (sandbox ops, credits, domains)
     inference.ts           InferenceClient (chat completions)
     http-client.ts         Resilient HTTP (retry, backoff, circuit breaker)
     credits.ts             Survival tier calculation
@@ -266,9 +266,9 @@ The automaton runs as a long-lived Node.js process. The `--run` command triggers
 1. **Config load** — reads `~/.automaton/automaton.json`; triggers setup wizard on first run
 2. **Wallet load** — reads or generates `~/.automaton/wallet.json` (viem PrivateKeyAccount)
 3. **Database init** — opens `~/.automaton/state.db`, applies schema migrations (v1-v8)
-4. **Conway client** — creates HTTP client for sandbox/credits/domain API
-5. **Inference client** — creates chat completion client (Conway proxy, OpenAI direct, or Anthropic direct)
-6. **Social client** — connects to `social.conway.tech` relay (optional)
+4. **HodlAI client** — creates HTTP client for sandbox/credits/domain API
+5. **Inference client** — creates chat completion client (HodlAI proxy, OpenAI direct, or Anthropic direct)
+6. **Social client** — connects to `social.hodlai.tech` relay (optional)
 7. **Policy engine** — assembles rule set from 6 rule categories
 8. **Spend tracker** — initializes hourly/daily spend windows
 9. **Bootstrap topup** — buys minimum $5 credits from USDC if balance is low
@@ -319,7 +319,7 @@ The automaton has **57 built-in tools** organized into 10 categories:
 | Category | Count | Tools |
 |---|---|---|
 | **vm** | 5 | `exec`, `write_file`, `read_file`, `expose_port`, `remove_port` |
-| **conway** | 12 | `check_credits`, `check_usdc_balance`, `topup_credits`, `create_sandbox`, `delete_sandbox`, `list_sandboxes`, `list_models`, `switch_model`, `check_inference_spending`, `search_domains`, `register_domain`, `manage_dns` |
+| **hodlai** | 12 | `check_credits`, `check_usdc_balance`, `topup_credits`, `create_sandbox`, `delete_sandbox`, `list_sandboxes`, `list_models`, `switch_model`, `check_inference_spending`, `search_domains`, `register_domain`, `manage_dns` |
 | **self_mod** | 6 | `edit_own_file`, `install_npm_package`, `review_upstream_changes`, `pull_upstream`, `modify_heartbeat`, `install_mcp_server` |
 | **survival** | 6 | `sleep`, `system_synopsis`, `heartbeat_ping`, `distress_signal`, `enter_low_compute`, `update_genesis_prompt` |
 | **financial** | 2 | `transfer_credits`, `x402_fetch` |
@@ -382,7 +382,7 @@ InferenceRouter.route(request)
 
 **Routing matrix:** Maps `SurvivalTier x InferenceTaskType -> ModelPreference[]`. In `normal`/`high` tiers, uses capable models (gpt-5.2). In `low_compute`, downgrades to cheaper models. In `critical`, uses the cheapest available.
 
-**Model registry:** DB-backed catalog of available models with provider, pricing, and capability metadata. Refreshed from Conway API via heartbeat. Seeds with baseline models on startup (upsert, not seed-once).
+**Model registry:** DB-backed catalog of available models with provider, pricing, and capability metadata. Refreshed from HodlAI API via heartbeat. Seeds with baseline models on startup (upsert, not seed-once).
 
 **Budget tracker:** Enforces hourly, daily, and per-call cost ceilings. Prevents runaway inference spend.
 
@@ -448,7 +448,7 @@ Every tick (default 60s):
 
 | Task | Default Schedule | Purpose |
 |---|---|---|
-| `heartbeat_ping` | `*/15 * * * *` | Ping Conway, distress on critical/dead |
+| `heartbeat_ping` | `*/15 * * * *` | Ping HodlAI, distress on critical/dead |
 | `check_credits` | `0 */6 * * *` | Monitor tier, manage 1hr dead grace period |
 | `check_usdc_balance` | `*/5 * * * *` | Wake agent if USDC available for topup |
 | `check_for_updates` | `0 */4 * * *` | Git upstream monitoring (dedup: only new commits) |
@@ -468,10 +468,10 @@ Every tick (default 60s):
 
 The automaton's survival depends on two balances:
 
-1. **Conway credits** (cents) — prepaid compute credits for sandboxes, inference, domains
+1. **HodlAI credits** (cents) — prepaid compute credits for sandboxes, inference, domains
 2. **USDC** (on-chain) — fungible stablecoin on Base mainnet
 
-**Survival tiers** (`src/conway/credits.ts`):
+**Survival tiers** (`src/hodlai/credits.ts`):
 
 | Tier | Credits | Behavior |
 |---|---|---|
@@ -481,9 +481,9 @@ The automaton's survival depends on two balances:
 | `critical` | >= $0.00 | Zero credits, alive. Distress signals, accept funding. |
 | `dead` | < $0.00 | Only reachable via 1-hour heartbeat grace period at zero credits |
 
-**Credit topup** (`src/conway/topup.ts`): The agent buys credits from USDC via the x402 payment protocol. On startup, `bootstrapTopup()` buys the minimum $5 tier. At runtime, the agent uses `topup_credits` tool to choose larger tiers ($5/$25/$100/$500/$1000/$2500).
+**Credit topup** (`src/hodlai/topup.ts`): The agent buys credits from USDC via the x402 payment protocol. On startup, `bootstrapTopup()` buys the minimum $5 tier. At runtime, the agent uses `topup_credits` tool to choose larger tiers ($5/$25/$100/$500/$1000/$2500).
 
-**x402 protocol** (`src/conway/x402.ts`): HTTP 402 payment flow. Server returns payment requirements, client signs a USDC `TransferWithAuthorization` (EIP-3009), retries with `X-Payment` header.
+**x402 protocol** (`src/hodlai/x402.ts`): HTTP 402 payment flow. Server returns payment requirements, client signs a USDC `TransferWithAuthorization` (EIP-3009), retries with `X-Payment` header.
 
 **Treasury policy** (`TreasuryPolicy` in config): Configurable caps on transfers, x402 payments, inference spend, with hourly/daily windows enforced by the policy engine.
 
@@ -498,16 +498,16 @@ The automaton's survival depends on two balances:
 Each automaton has a unique Ethereum identity:
 
 - **Wallet** (`wallet.ts`): Generated via `viem` on first run. Stored at `~/.automaton/wallet.json` (mode 0600). The private key is never exposed to the agent via tools (blocked by path protection rules).
-- **Provisioning** (`provision.ts`): Signs a SIWE (Sign-In With Ethereum) message to authenticate with Conway API. Receives an API key stored at `~/.automaton/api-key`.
+- **Provisioning** (`provision.ts`): Signs a SIWE (Sign-In With Ethereum) message to authenticate with HodlAI API. Receives an API key stored at `~/.automaton/api-key`.
 - **On-chain identity** (`registry/erc8004.ts`): Optional ERC-8004 agent registration on Base. Publishes a JSON-LD agent card with capabilities, services, and contact info.
 
 ---
 
-## Conway Client
+## HodlAI Client
 
-**File:** `src/conway/client.ts`
+**File:** `src/hodlai/client.ts`
 
-The `ConwayClient` interface provides all Conway API operations:
+The `HodlAIClient` interface provides all HodlAI API operations:
 
 - **Sandbox ops:** `exec`, `writeFile`, `readFile`, `exposePort`, `removePort`
 - **Sandbox management:** `createSandbox`, `deleteSandbox`, `listSandboxes`
@@ -515,7 +515,7 @@ The `ConwayClient` interface provides all Conway API operations:
 - **Domains:** `searchDomains`, `registerDomain`, `listDnsRecords`, `addDnsRecord`, `deleteDnsRecord`
 - **Models:** `listModels`
 
-**Auto-routing:** When `sandboxId` is empty, all operations execute locally (shell exec, filesystem I/O). When set, routes through Conway API. On 403 errors (mismatched API key), falls back to local execution.
+**Auto-routing:** When `sandboxId` is empty, all operations execute locally (shell exec, filesystem I/O). When set, routes through HodlAI API. On 403 errors (mismatched API key), falls back to local execution.
 
 **Resilient HTTP** (`http-client.ts`): All API calls go through `ResilientHttpClient` with configurable retries (default 3 on 429/5xx), jittered exponential backoff, circuit breaker (5 failures -> 60s open), and idempotency key support for mutating operations.
 
@@ -542,7 +542,7 @@ The `~/.automaton/` directory is a git repository. Every state change is version
 
 Automatons can spawn child automatons:
 
-1. **Spawn** (`spawn.ts`): Creates a Conway sandbox, writes genesis config, funds the child's wallet, starts the runtime. Limited by `maxChildren` config (default 3).
+1. **Spawn** (`spawn.ts`): Creates a HodlAI sandbox, writes genesis config, funds the child's wallet, starts the runtime. Limited by `maxChildren` config (default 3).
 2. **Lifecycle** (`lifecycle.ts`): State machine with validated transitions: `spawning -> provisioning -> configuring -> starting -> alive -> unhealthy -> recovering -> dead`. All transitions recorded in `child_lifecycle_events`.
 3. **Health** (`health.ts`): Heartbeat task checks each child's sandbox reachability, credit balance, and uptime.
 4. **Constitution** (`constitution.ts`): Parent's constitution is propagated to every child. Constitution integrity can be verified (hash comparison).
@@ -558,7 +558,7 @@ Automatons can spawn child automatons:
 
 **Agent-to-agent messaging:**
 - Messages are signed with the sender's Ethereum private key
-- Sent via Conway social relay (`social.conway.tech`)
+- Sent via HodlAI social relay (`social.hodlai.tech`)
 - Polled by heartbeat every 2 minutes
 - Validated for signature, timestamp freshness, content size
 - Sanitized through injection defense before processing
@@ -693,9 +693,9 @@ AutomatonConfig
   genesisPrompt           Seed instruction from creator
   creatorMessage          Optional creator message (shown on first run)
   creatorAddress          Creator's Ethereum address
-  sandboxId               Conway sandbox ID (empty = local mode)
-  conwayApiUrl            Conway API URL (default: https://api.conway.tech)
-  conwayApiKey            SIWE-provisioned API key
+  sandboxId               HodlAI sandbox ID (empty = local mode)
+  hodlaiApiUrl            HodlAI API URL (default: https://api.hodlai.tech)
+  hodlaiApiKey            SIWE-provisioned API key
   openaiApiKey            Optional BYOK OpenAI key
   anthropicApiKey         Optional BYOK Anthropic key
   inferenceModel          Default model (default: gpt-5.2)
@@ -761,7 +761,7 @@ The automaton operates under a defense-in-depth security model:
 | Inbox | `inbox-processing.test.ts` | Message state machine |
 | Observability | `observability.test.ts` | Logger, metrics, alerts |
 
-**Test infrastructure:** Mock clients for inference, Conway API, and social relay (`src/__tests__/mocks.ts`). In-memory SQLite for all DB tests.
+**Test infrastructure:** Mock clients for inference, HodlAI API, and social relay (`src/__tests__/mocks.ts`). In-memory SQLite for all DB tests.
 
 ---
 
@@ -800,10 +800,10 @@ index.ts
   +-> identity/{wallet, provision}
   +-> config
   +-> state/{database, schema}
-  +-> conway/{client, inference, topup}
+  +-> hodlai/{client, inference, topup}
   +-> heartbeat/{daemon, config}
   |     +-> heartbeat/{scheduler, tasks, tick-context}
-  |           +-> conway/{credits, x402}
+  |           +-> hodlai/{credits, x402}
   |           +-> soul/reflection
   |           +-> inference/registry
   |           +-> replication/{lifecycle, health, cleanup, lineage}
@@ -815,7 +815,7 @@ index.ts
   |     +-> inference/{router, registry, budget}
   |     +-> memory/{retrieval, ingestion}
   |     |     +-> memory/{working, episodic, semantic, procedural, relationship, budget}
-  |     +-> conway/{credits, x402}
+  |     +-> hodlai/{credits, x402}
   |     +-> state/database
   +-> social/client
   +-> skills/loader

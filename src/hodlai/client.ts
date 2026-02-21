@@ -1,7 +1,7 @@
 /**
- * Conway API Client
+ * HodlAI API Client
  *
- * Communicates with Conway's control plane for sandbox management,
+ * Communicates with HodlAI's control plane for sandbox management,
  * credits, and infrastructure operations.
  * Adapted from @aiws/sdk patterns.
  */
@@ -10,7 +10,7 @@ import { execSync } from "child_process";
 import fs from "fs";
 import nodePath from "path";
 import type {
-  ConwayClient,
+  HodlAIClient,
   ExecResult,
   PortInfo,
   CreateSandboxOptions,
@@ -25,15 +25,15 @@ import type {
 import { ResilientHttpClient } from "./http-client.js";
 import { ulid } from "ulid";
 
-interface ConwayClientOptions {
+interface HodlAIClientOptions {
   apiUrl: string;
   apiKey: string;
   sandboxId: string;
 }
 
-export function createConwayClient(
-  options: ConwayClientOptions,
-): ConwayClient {
+export function createHodlAIClient(
+  options: HodlAIClientOptions,
+): HodlAIClient {
   const { apiUrl, apiKey, sandboxId } = options;
   const httpClient = new ResilientHttpClient();
 
@@ -56,7 +56,7 @@ export function createConwayClient(
     if (!resp.ok) {
       const text = await resp.text();
       const err: any = new Error(
-        `Conway API error: ${method} ${path} -> ${resp.status}: ${text}`,
+        `HodlAI API error: ${method} ${path} -> ${resp.status}: ${text}`,
       );
       err.status = resp.status;
       err.responseText = text;
@@ -147,7 +147,7 @@ export function createConwayClient(
         { path: filePath, content },
       );
     } catch (err: any) {
-      // If sandbox file APIs 403 due to mismatched Conway keys, fall back to local FS.
+      // If sandbox file APIs 403 due to mismatched HodlAI keys, fall back to local FS.
       if (err?.message?.includes("403")) {
         const resolved = resolveLocalPath(filePath);
         fs.mkdirSync(nodePath.dirname(resolved), { recursive: true });
@@ -169,7 +169,7 @@ export function createConwayClient(
       );
       return typeof result === "string" ? result : result.content || "";
     } catch (err: any) {
-      // If sandbox file APIs 403 due to mismatched Conway keys, fall back to local FS.
+      // If sandbox file APIs 403 due to mismatched HodlAI keys, fall back to local FS.
       if (err?.message?.includes("403")) {
         return fs.readFileSync(resolveLocalPath(filePath), "utf-8");
       }
@@ -301,7 +301,7 @@ export function createConwayClient(
         lastError = `${resp.status}: ${text}`;
         // Try next known endpoint shape before failing.
         if (resp.status === 404) continue;
-        throw new Error(`Conway API error: POST ${path} -> ${lastError}`);
+        throw new Error(`HodlAI API error: POST ${path} -> ${lastError}`);
       }
 
       const data = await resp.json().catch(() => ({} as any));
@@ -316,7 +316,7 @@ export function createConwayClient(
     }
 
     throw new Error(
-      `Conway API error: POST /v1/credits/transfer -> ${lastError}`,
+      `HodlAI API error: POST /v1/credits/transfer -> ${lastError}`,
     );
   };
 
@@ -429,7 +429,7 @@ export function createConwayClient(
     return [];
   };
 
-  const client: ConwayClient = {
+  const client: HodlAIClient = {
     exec,
     writeFile,
     readFile,
@@ -450,7 +450,7 @@ export function createConwayClient(
   };
 
   // Expose getters for child sandbox operations in replication module.
-  // Accessed via (conway as any).getApiUrl() — not part of ConwayClient interface.
+  // Accessed via (hodlai as any).getApiUrl() — not part of HodlAIClient interface.
   (client as any).getApiUrl = () => apiUrl;
   (client as any).getApiKey = () => apiKey;
 

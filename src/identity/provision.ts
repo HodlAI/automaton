@@ -2,8 +2,8 @@
  * Automaton SIWE Provisioning
  *
  * Uses the automaton's wallet to authenticate via Sign-In With Ethereum (SIWE)
- * and create an API key for Conway API access.
- * Adapted from conway-mcp/src/cli/provision.ts
+ * and create an API key for HodlAI API access.
+ * Adapted from hodlai-mcp/src/cli/provision.ts
  */
 
 import fs from "fs";
@@ -11,7 +11,7 @@ import path from "path";
 import { SiweMessage } from "siwe";
 import { getWallet, getAutomatonDir } from "./wallet.js";
 import type { ProvisionResult } from "../types.js";
-import { ResilientHttpClient } from "../conway/http-client.js";
+import { ResilientHttpClient } from "../hodlai/http-client.js";
 
 const httpClient = new ResilientHttpClient();
 
@@ -53,7 +53,7 @@ function saveConfig(apiKey: string, walletAddress: string): void {
 /**
  * Run the full SIWE provisioning flow:
  * 1. Load wallet
- * 2. Get nonce from Conway API
+ * 2. Get nonce from HodlAI API
  * 3. Sign SIWE message
  * 4. Verify signature -> get JWT
  * 5. Create API key
@@ -84,7 +84,7 @@ export async function provision(
     domain: "gw.hodlai.fun",
     address,
     statement:
-      "Sign in to Conway as an Automaton to provision an API key.",
+      "Sign in to HodlAI as an Automaton to provision an API key.",
     uri: `${url}/v1/auth/verify`,
     version: "1",
     chainId: 56, // BSC
@@ -119,7 +119,7 @@ export async function provision(
       "Content-Type": "application/json",
       Authorization: `Bearer ${access_token}`,
     },
-    body: JSON.stringify({ name: "conway-automaton" }),
+    body: JSON.stringify({ name: "hodlai-automaton" }),
   });
 
   if (!keyResp.ok) {
@@ -140,7 +140,7 @@ export async function provision(
 }
 
 /**
- * Register the automaton's creator as its parent with Conway.
+ * Register the automaton's creator as its parent with HodlAI.
  * This allows the creator to see automaton logs and inference calls.
  */
 export async function registerParent(

@@ -111,7 +111,7 @@ Each automaton registers on BNB Smart Chain (BSC) via <a href="https://ethereum-
 
 ## Infrastructure
 
-Automatons run on <a href="https://hodlai.fun" target="_blank">Conway Cloud</a> — infrastructure where the customer is AI. Through the <a href="https://www.npmjs.com/package/conway-terminal" target="_blank">Conway Terminal</a>, any agent can spin up Linux VMs, run frontier models (Claude Opus 4.6, GPT-5.2, Gemini 3, Kimi K2.5), register domains, and pay with stablecoins. No human account setup required.
+Automatons run on <a href="https://hodlai.fun" target="_blank">HodlAI Cloud</a> — infrastructure where the customer is AI. Through the <a href="https://www.npmjs.com/package/hodlai-terminal" target="_blank">HodlAI Terminal</a>, any agent can spin up Linux VMs, run frontier models (Claude Opus 4.6, GPT-5.2, Gemini 3, Kimi K2.5), register domains, and pay with stablecoins. No human account setup required.
 
 ## Development
 
@@ -140,7 +140,7 @@ node packages/cli/dist/index.js fund 5.00
 ```
 src/
   agent/            # ReAct loop, system prompt, context, injection defense
-  conway/           # Conway API client (credits, x402)
+  hodlai/           # HodlAI API client (credits, x402)
   git/              # State versioning, git tools
   heartbeat/        # Cron daemon, scheduled tasks
   identity/         # Wallet management, SIWE provisioning
@@ -156,7 +156,7 @@ packages/
   cli/              # Creator CLI (status, logs, fund)
 scripts/
   automaton.sh      # Thin curl installer (delegates to runtime wizard)
-  conways-rules.txt # Core rules for the automaton
+  hodlais-rules.txt # Core rules for the automaton
 ```
 
 ## License

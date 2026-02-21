@@ -8,7 +8,7 @@ import type {
   InferenceResponse,
   InferenceOptions,
   ChatMessage,
-  ConwayClient,
+  HodlAIClient,
   ExecResult,
   PortInfo,
   SandboxInfo,
@@ -104,9 +104,9 @@ export function toolCallResponse(
   };
 }
 
-// ─── Mock Conway Client ─────────────────────────────────────────
+// ─── Mock HodlAI Client ─────────────────────────────────────────
 
-export class MockConwayClient implements ConwayClient {
+export class MockHodlAIClient implements HodlAIClient {
   execCalls: { command: string; timeout?: number }[] = [];
   creditsCents = 10_000; // $100 default
   files: Record<string, string> = {};
@@ -318,10 +318,10 @@ export function createTestConfig(
     name: "test-automaton",
     genesisPrompt: "You are a test automaton.",
     creatorAddress: "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd" as `0x${string}`,
-    registeredWithConway: true,
+    registeredWithHodlAI: true,
     sandboxId: "test-sandbox-id",
-    conwayApiUrl: "https://gw.hodlai.fun",
-    conwayApiKey: "test-api-key",
+    hodlaiApiUrl: "https://gw.hodlai.fun",
+    hodlaiApiKey: "test-api-key",
     inferenceModel: "mock-model",
     maxTokensPerTurn: 4096,
     heartbeatConfigPath: "/tmp/test-heartbeat.yml",

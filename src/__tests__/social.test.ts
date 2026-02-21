@@ -109,7 +109,7 @@ describe("Signing", () => {
 
     // Reconstruct canonical and verify
     const contentHash = keccak256(toBytes(content));
-    const canonical = `Conway:send:${to.toLowerCase()}:${contentHash}:${payload.signed_at}`;
+    const canonical = `HodlAI:send:${to.toLowerCase()}:${contentHash}:${payload.signed_at}`;
 
     const valid = await verifyMessage({
       address: account.address,
@@ -405,7 +405,7 @@ describe("Agent Card", () => {
 
     const config = {
       name: "TestBot",
-      conwayApiUrl: "https://gw.hodlai.fun",
+      hodlaiApiUrl: "https://gw.hodlai.fun",
       creatorAddress: "0x70997970C51812dc3A010C7d01b50e0d17dc79C8" as `0x${string}`,
     } as any;
 
@@ -420,7 +420,7 @@ describe("Agent Card", () => {
     expect(cardStr).not.toContain("sandbox-123");
   });
 
-  it("generateAgentCard does NOT include Conway API URL", async () => {
+  it("generateAgentCard does NOT include HodlAI API URL", async () => {
     const { generateAgentCard } = await import("../registry/agent-card.js");
 
     const identity = {
@@ -435,7 +435,7 @@ describe("Agent Card", () => {
 
     const config = {
       name: "TestBot",
-      conwayApiUrl: "https://gw.hodlai.fun",
+      hodlaiApiUrl: "https://gw.hodlai.fun",
       creatorAddress: "0x70997970C51812dc3A010C7d01b50e0d17dc79C8" as `0x${string}`,
     } as any;
 
@@ -465,7 +465,7 @@ describe("Agent Card", () => {
 
     const config = {
       name: "TestBot",
-      conwayApiUrl: "https://gw.hodlai.fun",
+      hodlaiApiUrl: "https://gw.hodlai.fun",
       creatorAddress: "0x70997970C51812dc3A010C7d01b50e0d17dc79C8" as `0x${string}`,
     } as any;
 
@@ -484,7 +484,7 @@ describe("Agent Card", () => {
     const { hostAgentCard } = await import("../registry/agent-card.js");
 
     const writtenFiles: Record<string, string> = {};
-    const mockConway = {
+    const mockHodlAI = {
       writeFile: vi.fn(async (path: string, content: string) => {
         writtenFiles[path] = content;
       }),
@@ -501,7 +501,7 @@ describe("Agent Card", () => {
       active: true,
     };
 
-    await hostAgentCard(card, mockConway);
+    await hostAgentCard(card, mockHodlAI);
 
     // Card should be written as separate JSON file
     expect(writtenFiles["/tmp/agent-card.json"]).toBeTruthy();

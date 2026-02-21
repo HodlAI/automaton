@@ -1,8 +1,8 @@
 /**
- * Conway Inference Client
+ * HodlAI Inference Client
  *
- * Wraps Conway's /v1/chat/completions endpoint (OpenAI-compatible).
- * The automaton pays for its own thinking through Conway credits.
+ * Wraps HodlAI's /v1/chat/completions endpoint (OpenAI-compatible).
+ * The automaton pays for its own thinking through HodlAI credits.
  */
 
 import type {
@@ -28,7 +28,7 @@ interface InferenceClientOptions {
   anthropicApiKey?: string;
 }
 
-type InferenceBackend = "conway" | "openai" | "anthropic";
+type InferenceBackend = "hodlai" | "openai" | "anthropic";
 
 export function createInferenceClient(
   options: InferenceClientOptions,
@@ -165,8 +165,8 @@ function resolveInferenceBackend(
   if (keys.openaiApiKey && /^(gpt|o[1-9]|chatgpt)/i.test(model)) {
     return "openai";
   }
-  // Default: Conway proxy (handles all models including unknown ones)
-  return "conway";
+  // Default: HodlAI proxy (handles all models including unknown ones)
+  return "hodlai";
 }
 
 async function chatViaOpenAiCompatible(params: {
@@ -174,7 +174,7 @@ async function chatViaOpenAiCompatible(params: {
   body: Record<string, unknown>;
   apiUrl: string;
   apiKey: string;
-  backend: "conway" | "openai";
+  backend: "hodlai" | "openai";
   httpClient: ResilientHttpClient;
 }): Promise<InferenceResponse> {
   const resp = await params.httpClient.request(`${params.apiUrl}/v1/chat/completions`, {

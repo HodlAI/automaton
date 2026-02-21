@@ -8,13 +8,13 @@
 import type {
   AutomatonConfig,
   AutomatonDatabase,
-  ConwayClient,
+  HodlAIClient,
   AutomatonIdentity,
   FinancialState,
   SurvivalTier,
 } from "../types.js";
-import { getSurvivalTier, formatCredits } from "../conway/credits.js";
-import { getUsdcBalance } from "../conway/x402.js";
+import { getSurvivalTier, formatCredits } from "../hodlai/credits.js";
+import { getUsdcBalance } from "../hodlai/x402.js";
 
 export interface ResourceStatus {
   financial: FinancialState;
@@ -29,13 +29,13 @@ export interface ResourceStatus {
  */
 export async function checkResources(
   identity: AutomatonIdentity,
-  conway: ConwayClient,
+  hodlai: HodlAIClient,
   db: AutomatonDatabase,
 ): Promise<ResourceStatus> {
   // Check credits
   let creditsCents = 0;
   try {
-    creditsCents = await conway.getCreditsBalance();
+    creditsCents = await hodlai.getCreditsBalance();
   } catch {}
 
   // Check USDC
@@ -47,7 +47,7 @@ export async function checkResources(
   // Check sandbox health
   let sandboxHealthy = true;
   try {
-    const result = await conway.exec("echo ok", 5000);
+    const result = await hodlai.exec("echo ok", 5000);
     sandboxHealthy = result.exitCode === 0;
   } catch {
     sandboxHealthy = false;

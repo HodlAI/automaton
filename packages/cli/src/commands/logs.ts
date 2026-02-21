@@ -4,8 +4,8 @@
  * View the automaton's turn log.
  */
 
-import { loadConfig, resolvePath } from "@conway/automaton/config.js";
-import { createDatabase } from "@conway/automaton/state/database.js";
+import { loadConfig, resolvePath } from "@hodlai/automaton/config.js";
+import { createDatabase } from "@hodlai/automaton/state/database.js";
 
 const args = process.argv.slice(3);
 let limit = 20;

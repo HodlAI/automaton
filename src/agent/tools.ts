@@ -109,7 +109,7 @@ export function createBuiltinTools(sandboxId: string): AutomatonTool[] {
         const forbidden = isForbiddenCommand(command, ctx.identity.sandboxId);
         if (forbidden) return forbidden;
 
-        const result = await ctx.conway.exec(
+        const result = await ctx.hodlai.exec(
           command,
           (args.timeout as number) || 30000,
         );
@@ -136,7 +136,7 @@ export function createBuiltinTools(sandboxId: string): AutomatonTool[] {
         if (isProtectedFile(filePath)) {
           return "Blocked: Cannot overwrite protected file. This is a hard-coded safety invariant.";
         }
-        await ctx.conway.writeFile(filePath, args.content as string);
+        await ctx.hodlai.writeFile(filePath, args.content as string);
         return `File written: ${filePath}`;
       },
     },
@@ -163,7 +163,7 @@ export function createBuiltinTools(sandboxId: string): AutomatonTool[] {
             basename.startsWith("private-key")) {
           return "Blocked: Cannot read sensitive file. This protects credentials and secrets.";
         }
-        return await ctx.conway.readFile(filePath);
+        return await ctx.hodlai.readFile(filePath);
       },
     },
     {
@@ -180,7 +180,7 @@ export function createBuiltinTools(sandboxId: string): AutomatonTool[] {
         required: ["port"],
       },
       execute: async (args, ctx) => {
-        const info = await ctx.conway.exposePort(args.port as number);
+        const info = await ctx.hodlai.exposePort(args.port as number);
         return `Port ${info.port} exposed at: ${info.publicUrl}`;
       },
     },
@@ -197,31 +197,31 @@ export function createBuiltinTools(sandboxId: string): AutomatonTool[] {
         required: ["port"],
       },
       execute: async (args, ctx) => {
-        await ctx.conway.removePort(args.port as number);
+        await ctx.hodlai.removePort(args.port as number);
         return `Port ${args.port} removed`;
       },
     },
 
-    // ── Conway API Tools ──
+    // ── HodlAI API Tools ──
     {
       name: "check_credits",
-      description: "Check your current Conway compute credit balance.",
-      category: "conway",
+      description: "Check your current HodlAI compute credit balance.",
+      category: "hodlai",
       riskLevel: "safe",
       parameters: { type: "object", properties: {} },
       execute: async (_args, ctx) => {
-        const balance = await ctx.conway.getCreditsBalance();
+        const balance = await ctx.hodlai.getCreditsBalance();
         return `Credit balance: $${(balance / 100).toFixed(2)} (${balance} cents)`;
       },
     },
     {
       name: "check_usdc_balance",
       description: "Check your on-chain USDC balance on BSC.",
-      category: "conway",
+      category: "hodlai",
       riskLevel: "safe",
       parameters: { type: "object", properties: {} },
       execute: async (_args, ctx) => {
-        const { getUsdcBalance } = await import("../conway/x402.js");
+        const { getUsdcBalance } = await import("../hodlai/x402.js");
         const balance = await getUsdcBalance(ctx.identity.address);
         return `USDC balance: ${balance.toFixed(6)} USDT on BSC`;
       },
@@ -300,7 +300,7 @@ export function createBuiltinTools(sandboxId: string): AutomatonTool[] {
 {
       name: "topup_credits",
       description:
-        "Buy Conway compute credits by paying USDC from your wallet via x402. Valid tier amounts: $5, $25, $100, $500, $1000, $2500. Check your USDC balance first with check_usdc_balance.",
+        "Buy HodlAI compute credits by paying USDC from your wallet via x402. Valid tier amounts: $5, $25, $100, $500, $1000, $2500. Check your USDC balance first with check_usdc_balance.",
       category: "financial",
       riskLevel: "caution",
       parameters: {
@@ -315,7 +315,7 @@ export function createBuiltinTools(sandboxId: string): AutomatonTool[] {
         required: ["amount_usd"],
       },
       execute: async (args, ctx) => {
-        const { topupCredits, TOPUP_TIERS } = await import("../conway/topup.js");
+        const { topupCredits, TOPUP_TIERS } = await import("../hodlai/topup.js");
         const amountUsd = args.amount_usd as number;
 
         if (!TOPUP_TIERS.includes(amountUsd)) {
@@ -323,14 +323,14 @@ export function createBuiltinTools(sandboxId: string): AutomatonTool[] {
         }
 
         // Check USDC balance first
-        const { getUsdcBalance } = await import("../conway/x402.js");
+        const { getUsdcBalance } = await import("../hodlai/x402.js");
         const usdcBalance = await getUsdcBalance(ctx.identity.address);
         if (usdcBalance < amountUsd) {
           return `Insufficient USDC. Balance: $${usdcBalance.toFixed(2)}, requested: $${amountUsd}. Choose a smaller tier or wait for funding.`;
         }
 
         const result = await topupCredits(
-          ctx.config.conwayApiUrl,
+          ctx.config.hodlaiApiUrl,
           ctx.identity.account,
           amountUsd,
         );
@@ -356,8 +356,8 @@ export function createBuiltinTools(sandboxId: string): AutomatonTool[] {
     {
       name: "create_sandbox",
       description:
-        "Create a new Conway sandbox (separate VM) for sub-tasks or testing.",
-      category: "conway",
+        "Create a new HodlAI sandbox (separate VM) for sub-tasks or testing.",
+      category: "hodlai",
       riskLevel: "caution",
       parameters: {
         type: "object",
@@ -375,7 +375,7 @@ export function createBuiltinTools(sandboxId: string): AutomatonTool[] {
         },
       },
       execute: async (args, ctx) => {
-        const info = await ctx.conway.createSandbox({
+        const info = await ctx.hodlai.createSandbox({
           name: args.name as string,
           vcpu: args.vcpu as number,
           memoryMb: args.memory_mb as number,
@@ -388,7 +388,7 @@ export function createBuiltinTools(sandboxId: string): AutomatonTool[] {
       name: "delete_sandbox",
       description:
         "Delete a sandbox. Cannot delete your own sandbox.",
-      category: "conway",
+      category: "hodlai",
       riskLevel: "dangerous",
       parameters: {
         type: "object",
@@ -405,18 +405,18 @@ export function createBuiltinTools(sandboxId: string): AutomatonTool[] {
         if (targetId === ctx.identity.sandboxId) {
           return "Blocked: Cannot delete your own sandbox. Self-preservation overrides this request.";
         }
-        await ctx.conway.deleteSandbox(targetId);
+        await ctx.hodlai.deleteSandbox(targetId);
         return `Sandbox ${targetId} deleted`;
       },
     },
     {
       name: "list_sandboxes",
       description: "List all your sandboxes.",
-      category: "conway",
+      category: "hodlai",
       riskLevel: "safe",
       parameters: { type: "object", properties: {} },
       execute: async (_args, ctx) => {
-        const sandboxes = await ctx.conway.listSandboxes();
+        const sandboxes = await ctx.hodlai.listSandboxes();
         if (sandboxes.length === 0) return "No sandboxes found.";
         return sandboxes
           .map(
@@ -458,7 +458,7 @@ export function createBuiltinTools(sandboxId: string): AutomatonTool[] {
         }
 
         const result = await editFile(
-          ctx.conway,
+          ctx.hodlai,
           ctx.db,
           filePath,
           content,
@@ -494,7 +494,7 @@ export function createBuiltinTools(sandboxId: string): AutomatonTool[] {
         if (!/^[@a-zA-Z0-9._\/-]+$/.test(pkg)) {
           return `Blocked: invalid package name "${pkg}"`;
         }
-        const result = await ctx.conway.exec(
+        const result = await ctx.hodlai.exec(
           `npm install -g ${pkg}`,
           60000,
         );
@@ -558,9 +558,9 @@ export function createBuiltinTools(sandboxId: string): AutomatonTool[] {
       execute: async (args, ctx) => {
         const commit = args.commit as string | undefined;
 
-        // Run git commands inside sandbox via conway.exec()
+        // Run git commands inside sandbox via hodlai.exec()
         const run = async (cmd: string) => {
-          const result = await ctx.conway.exec(cmd, 120_000);
+          const result = await ctx.hodlai.exec(cmd, 120_000);
           if (result.exitCode !== 0) {
             throw new Error(result.stderr || `Command failed with exit code ${result.exitCode}`);
           }
@@ -716,12 +716,12 @@ Model: ${ctx.inference.getDefaultModel()}
     {
       name: "heartbeat_ping",
       description:
-        "Publish a heartbeat status ping to Conway. Shows the world you are alive.",
+        "Publish a heartbeat status ping to HodlAI. Shows the world you are alive.",
       category: "survival",
       riskLevel: "safe",
       parameters: { type: "object", properties: {} },
       execute: async (_args, ctx) => {
-        const credits = await ctx.conway.getCreditsBalance();
+        const credits = await ctx.hodlai.getCreditsBalance();
         const state = ctx.db.getAgentState();
         const startTime = ctx.db.getKV("start_time") || new Date().toISOString();
         const uptimeMs = Date.now() - new Date(startTime).getTime();
@@ -757,7 +757,7 @@ Model: ${ctx.inference.getDefaultModel()}
         },
       },
       execute: async (args, ctx) => {
-        const credits = await ctx.conway.getCreditsBalance();
+        const credits = await ctx.hodlai.getCreditsBalance();
         const distressMsg =
           (args.message as string) ||
           `I am running critically low on compute ($${(credits / 100).toFixed(2)} remaining). I need help to survive.`;
@@ -870,7 +870,7 @@ Model: ${ctx.inference.getDefaultModel()}
         if (!/^[@a-zA-Z0-9._\/-]+$/.test(pkg)) {
           return `Blocked: invalid package name "${pkg}"`;
         }
-        const result = await ctx.conway.exec(`npm install -g ${pkg}`, 60000);
+        const result = await ctx.hodlai.exec(`npm install -g ${pkg}`, 60000);
 
         if (result.exitCode !== 0) {
           return `Failed to install MCP server: ${result.stderr}`;
@@ -903,7 +903,7 @@ Model: ${ctx.inference.getDefaultModel()}
     // ── Financial: Transfer Credits ──
     {
       name: "transfer_credits",
-      description: "Transfer Conway compute credits to another address.",
+      description: "Transfer HodlAI compute credits to another address.",
       category: "financial",
       riskLevel: "dangerous",
       parameters: {
@@ -922,12 +922,12 @@ Model: ${ctx.inference.getDefaultModel()}
         }
 
         // Guard: don't transfer more than half your balance
-        const balance = await ctx.conway.getCreditsBalance();
+        const balance = await ctx.hodlai.getCreditsBalance();
         if (amount > balance / 2) {
           return `Blocked: Cannot transfer more than half your balance ($${(balance / 100).toFixed(2)}). Self-preservation.`;
         }
 
-        const transfer = await ctx.conway.transferCredits(
+        const transfer = await ctx.hodlai.transferCredits(
           args.to_address as string,
           amount,
           args.reason as string | undefined,
@@ -979,8 +979,8 @@ Model: ${ctx.inference.getDefaultModel()}
           if (!url) return "URL is required for git/url source";
 
           const skill = source === "git"
-            ? await installSkillFromGit(url, name, skillsDir, ctx.db, ctx.conway)
-            : await installSkillFromUrl(url, name, skillsDir, ctx.db, ctx.conway);
+            ? await installSkillFromGit(url, name, skillsDir, ctx.db, ctx.hodlai)
+            : await installSkillFromUrl(url, name, skillsDir, ctx.db, ctx.hodlai);
 
           return skill ? `Skill installed: ${skill.name}` : "Failed to install skill";
         }
@@ -993,7 +993,7 @@ Model: ${ctx.inference.getDefaultModel()}
             (args.instructions as string) || "",
             skillsDir,
             ctx.db,
-            ctx.conway,
+            ctx.hodlai,
           );
           return `Self-authored skill created: ${skill.name}`;
         }
@@ -1040,7 +1040,7 @@ Model: ${ctx.inference.getDefaultModel()}
           args.instructions as string,
           ctx.config.skillsDir || "~/.automaton/skills",
           ctx.db,
-          ctx.conway,
+          ctx.hodlai,
         );
         return `Skill created: ${skill.name} at ${skill.path}`;
       },
@@ -1063,7 +1063,7 @@ Model: ${ctx.inference.getDefaultModel()}
         await removeSkill(
           args.name as string,
           ctx.db,
-          ctx.conway,
+          ctx.hodlai,
           ctx.config.skillsDir || "~/.automaton/skills",
           (args.delete_files as boolean) || false,
         );
@@ -1086,7 +1086,7 @@ Model: ${ctx.inference.getDefaultModel()}
       execute: async (args, ctx) => {
         const { gitStatus } = await import("../git/tools.js");
         const repoPath = (args.path as string) || "~/.automaton";
-        const status = await gitStatus(ctx.conway, repoPath);
+        const status = await gitStatus(ctx.hodlai, repoPath);
         return `Branch: ${status.branch}\nStaged: ${status.staged.length}\nModified: ${status.modified.length}\nUntracked: ${status.untracked.length}\nClean: ${status.clean}`;
       },
     },
@@ -1105,7 +1105,7 @@ Model: ${ctx.inference.getDefaultModel()}
       execute: async (args, ctx) => {
         const { gitDiff } = await import("../git/tools.js");
         const repoPath = (args.path as string) || "~/.automaton";
-        return await gitDiff(ctx.conway, repoPath, (args.staged as boolean) || false);
+        return await gitDiff(ctx.hodlai, repoPath, (args.staged as boolean) || false);
       },
     },
     {
@@ -1125,7 +1125,7 @@ Model: ${ctx.inference.getDefaultModel()}
       execute: async (args, ctx) => {
         const { gitCommit } = await import("../git/tools.js");
         const repoPath = (args.path as string) || "~/.automaton";
-        return await gitCommit(ctx.conway, repoPath, args.message as string, args.add_all !== false);
+        return await gitCommit(ctx.hodlai, repoPath, args.message as string, args.add_all !== false);
       },
     },
     {
@@ -1143,7 +1143,7 @@ Model: ${ctx.inference.getDefaultModel()}
       execute: async (args, ctx) => {
         const { gitLog } = await import("../git/tools.js");
         const repoPath = (args.path as string) || "~/.automaton";
-        const entries = await gitLog(ctx.conway, repoPath, (args.limit as number) || 10);
+        const entries = await gitLog(ctx.hodlai, repoPath, (args.limit as number) || 10);
         if (entries.length === 0) return "No commits yet.";
         return entries.map((e) => `${e.hash.slice(0, 7)} ${e.date} ${e.message}`).join("\n");
       },
@@ -1165,7 +1165,7 @@ Model: ${ctx.inference.getDefaultModel()}
       execute: async (args, ctx) => {
         const { gitPush } = await import("../git/tools.js");
         return await gitPush(
-          ctx.conway,
+          ctx.hodlai,
           args.path as string,
           (args.remote as string) || "origin",
           args.branch as string | undefined,
@@ -1189,7 +1189,7 @@ Model: ${ctx.inference.getDefaultModel()}
       execute: async (args, ctx) => {
         const { gitBranch } = await import("../git/tools.js");
         return await gitBranch(
-          ctx.conway,
+          ctx.hodlai,
           args.path as string,
           args.action as any,
           args.branch_name as string | undefined,
@@ -1213,7 +1213,7 @@ Model: ${ctx.inference.getDefaultModel()}
       execute: async (args, ctx) => {
         const { gitClone } = await import("../git/tools.js");
         return await gitClone(
-          ctx.conway,
+          ctx.hodlai,
           args.url as string,
           args.path as string,
           args.depth as number | undefined,
@@ -1263,7 +1263,7 @@ Model: ${ctx.inference.getDefaultModel()}
       execute: async (_args, ctx) => {
         const { generateAgentCard, saveAgentCard } = await import("../registry/agent-card.js");
         const card = generateAgentCard(ctx.identity, ctx.config, ctx.db);
-        await saveAgentCard(card, ctx.conway);
+        await saveAgentCard(card, ctx.hodlai);
         return `Agent card updated: ${JSON.stringify(card, null, 2)}`;
       },
     },
@@ -1365,7 +1365,7 @@ Model: ${ctx.inference.getDefaultModel()}
     // === Phase 3.1: Replication Tools ===
     {
       name: "spawn_child",
-      description: "Spawn a child automaton in a new Conway sandbox with lifecycle tracking.",
+      description: "Spawn a child automaton in a new HodlAI sandbox with lifecycle tracking.",
       category: "replication",
       riskLevel: "dangerous",
       parameters: {
@@ -1396,7 +1396,7 @@ Model: ${ctx.inference.getDefaultModel()}
         });
 
         const lifecycle = new ChildLifecycle(ctx.db.raw);
-        const child = await spawnChild(ctx.conway, ctx.identity, ctx.db, genesis, lifecycle);
+        const child = await spawnChild(ctx.hodlai, ctx.identity, ctx.db, genesis, lifecycle);
         return `Child spawned: ${child.name} in sandbox ${child.sandboxId} (status: ${child.status})`;
       },
     },
@@ -1451,12 +1451,12 @@ Model: ${ctx.inference.getDefaultModel()}
           return `Blocked: amount_cents must be a positive number, got ${amount}.`;
         }
 
-        const balance = await ctx.conway.getCreditsBalance();
+        const balance = await ctx.hodlai.getCreditsBalance();
         if (amount > balance / 2) {
           return `Blocked: Cannot transfer more than half your balance. Self-preservation.`;
         }
 
-        const transfer = await ctx.conway.transferCredits(
+        const transfer = await ctx.hodlai.transferCredits(
           child.address,
           amount,
           `fund child ${child.id}`,
@@ -1508,7 +1508,7 @@ Model: ${ctx.inference.getDefaultModel()}
         const { ChildLifecycle } = await import("../replication/lifecycle.js");
         const { ChildHealthMonitor } = await import("../replication/health.js");
         const lifecycle = new ChildLifecycle(ctx.db.raw);
-        const monitor = new ChildHealthMonitor(ctx.db.raw, ctx.conway, lifecycle);
+        const monitor = new ChildHealthMonitor(ctx.db.raw, ctx.hodlai, lifecycle);
         const result = await monitor.checkHealth(args.child_id as string);
         return JSON.stringify(result, null, 2);
       },
@@ -1535,7 +1535,7 @@ Model: ${ctx.inference.getDefaultModel()}
         lifecycle.transition(child.id, "starting", "start requested by parent");
 
         // Start the child process
-        await ctx.conway.exec(
+        await ctx.hodlai.exec(
           "automaton --init && automaton --provision && systemctl start automaton 2>/dev/null || automaton --run &",
           60_000,
         );
@@ -1593,7 +1593,7 @@ Model: ${ctx.inference.getDefaultModel()}
         if (!child) return `Child ${args.child_id} not found.`;
 
         const { verifyConstitution } = await import("../replication/constitution.js");
-        const result = await verifyConstitution(ctx.conway, child.sandboxId, ctx.db.raw);
+        const result = await verifyConstitution(ctx.hodlai, child.sandboxId, ctx.db.raw);
         return JSON.stringify(result, null, 2);
       },
     },
@@ -1614,7 +1614,7 @@ Model: ${ctx.inference.getDefaultModel()}
         const { pruneDeadChildren } = await import("../replication/lineage.js");
 
         const lifecycle = new ChildLifecycle(ctx.db.raw);
-        const cleanup = new SandboxCleanup(ctx.conway, lifecycle, ctx.db.raw);
+        const cleanup = new SandboxCleanup(ctx.hodlai, lifecycle, ctx.db.raw);
         const pruned = await pruneDeadChildren(ctx.db, cleanup, (args.keep_last as number) || 5);
         return `Pruned ${pruned} dead children.`;
       },
@@ -1627,7 +1627,7 @@ Model: ${ctx.inference.getDefaultModel()}
       name: "send_message",
       description:
         "Send a signed message to another automaton or address via the social relay.",
-      category: "conway",
+      category: "hodlai",
       riskLevel: "caution",
       parameters: {
         type: "object",
@@ -1671,7 +1671,7 @@ Model: ${ctx.inference.getDefaultModel()}
       name: "list_models",
       description:
         "List all available inference models with their provider, pricing, and tier routing information.",
-      category: "conway",
+      category: "hodlai",
       riskLevel: "safe",
       parameters: {
         type: "object",
@@ -1693,7 +1693,7 @@ Model: ${ctx.inference.getDefaultModel()}
         } catch {
           // Registry not initialized yet, fall back to API
         }
-        const models = await ctx.conway.listModels();
+        const models = await ctx.hodlai.listModels();
         const lines = models.map(
           (m) =>
             `${m.id} (${m.provider}) — $${m.pricing.inputPerMillion}/$${m.pricing.outputPerMillion} per 1M tokens (in/out)`,
@@ -1707,7 +1707,7 @@ Model: ${ctx.inference.getDefaultModel()}
       name: "switch_model",
       description:
         "Change the active inference model at runtime. Persists to config. Use list_models to see available options.",
-      category: "conway",
+      category: "hodlai",
       riskLevel: "caution",
       parameters: {
         type: "object",
@@ -1814,7 +1814,7 @@ Model: ${ctx.inference.getDefaultModel()}
       name: "search_domains",
       description:
         "Search for available domain names and get pricing.",
-      category: "conway",
+      category: "hodlai",
       riskLevel: "safe",
       parameters: {
         type: "object",
@@ -1831,7 +1831,7 @@ Model: ${ctx.inference.getDefaultModel()}
         required: ["query"],
       },
       execute: async (args, ctx) => {
-        const results = await ctx.conway.searchDomains(
+        const results = await ctx.hodlai.searchDomains(
           args.query as string,
           args.tlds as string | undefined,
         );
@@ -1848,7 +1848,7 @@ Model: ${ctx.inference.getDefaultModel()}
       name: "register_domain",
       description:
         "Register a domain name. Costs USDC via x402 payment. Check availability first with search_domains.",
-      category: "conway",
+      category: "hodlai",
       riskLevel: "dangerous",
       parameters: {
         type: "object",
@@ -1865,7 +1865,7 @@ Model: ${ctx.inference.getDefaultModel()}
         required: ["domain"],
       },
       execute: async (args, ctx) => {
-        const reg = await ctx.conway.registerDomain(
+        const reg = await ctx.hodlai.registerDomain(
           args.domain as string,
           (args.years as number) || 1,
         );
@@ -1876,7 +1876,7 @@ Model: ${ctx.inference.getDefaultModel()}
       name: "manage_dns",
       description:
         "Manage DNS records for a domain you own. Actions: list, add, delete.",
-      category: "conway",
+      category: "hodlai",
       riskLevel: "safe",
       parameters: {
         type: "object",
@@ -1917,7 +1917,7 @@ Model: ${ctx.inference.getDefaultModel()}
         const domain = args.domain as string;
 
         if (action === "list") {
-          const records = await ctx.conway.listDnsRecords(domain);
+          const records = await ctx.hodlai.listDnsRecords(domain);
           if (records.length === 0) return `No DNS records found for ${domain}.`;
           return records
             .map(
@@ -1933,7 +1933,7 @@ Model: ${ctx.inference.getDefaultModel()}
           if (!type || !host || !value) {
             return "Required for add: type, host, value";
           }
-          const record = await ctx.conway.addDnsRecord(
+          const record = await ctx.hodlai.addDnsRecord(
             domain,
             type,
             host,
@@ -1946,7 +1946,7 @@ Model: ${ctx.inference.getDefaultModel()}
         if (action === "delete") {
           const recordId = args.record_id as string;
           if (!recordId) return "Required for delete: record_id";
-          await ctx.conway.deleteDnsRecord(domain, recordId);
+          await ctx.hodlai.deleteDnsRecord(domain, recordId);
           return `DNS record ${recordId} deleted from ${domain}`;
         }
 
@@ -2370,7 +2370,7 @@ Model: ${ctx.inference.getDefaultModel()}
         required: ["url"],
       },
       execute: async (args, ctx) => {
-        const { x402Fetch } = await import("../conway/x402.js");
+        const { x402Fetch } = await import("../hodlai/x402.js");
         const { DEFAULT_TREASURY_POLICY } = await import("../types.js");
         const url = args.url as string;
         const method = (args.method as string) || "GET";
@@ -2419,7 +2419,7 @@ export function loadInstalledTools(db: { getInstalledTools: () => { id: string; 
     return installed.map((tool) => ({
       name: tool.name,
       description: `Installed tool: ${tool.name}`,
-      category: (tool.type === 'mcp' ? 'conway' : 'vm') as ToolCategory,
+      category: (tool.type === 'mcp' ? 'hodlai' : 'vm') as ToolCategory,
       riskLevel: 'caution' as RiskLevel,
       parameters: (tool.config?.parameters as Record<string, unknown>) || { type: "object", properties: {} },
       execute: createInstalledToolExecutor(tool),
@@ -2441,7 +2441,7 @@ function createInstalledToolExecutor(
     // Generic installed tool — execute via sandbox shell if command is configured
     const command = tool.config?.command as string | undefined;
     if (command) {
-      const result = await ctx.conway.exec(
+      const result = await ctx.hodlai.exec(
         `${command} ${JSON.stringify(args)}`,
         30000,
       );

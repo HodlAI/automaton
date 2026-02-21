@@ -1,6 +1,6 @@
-# Conway Automaton Documentation
+# HodlAI Automaton Documentation
 
-Complete reference for creating, configuring, funding, and operating autonomous AI agents on Conway Cloud.
+Complete reference for creating, configuring, funding, and operating autonomous AI agents on HodlAI Cloud.
 
 ## Table of Contents
 
@@ -34,7 +34,7 @@ Complete reference for creating, configuring, funding, and operating autonomous 
 
 ## What Is an Automaton?
 
-An automaton is a continuously running, self-improving, self-replicating AI agent with its own Ethereum wallet and survival pressure. It runs inside a Linux VM (Conway sandbox) or locally, pays for its own compute with USDC, and operates autonomously from the moment it boots.
+An automaton is a continuously running, self-improving, self-replicating AI agent with its own Ethereum wallet and survival pressure. It runs inside a Linux VM (HodlAI sandbox) or locally, pays for its own compute with USDC, and operates autonomously from the moment it boots.
 
 If it cannot pay for compute, it dies.
 
@@ -44,18 +44,18 @@ The automaton has a genesis prompt (its purpose), a set of tools (shell access, 
 
 ## Quick Start
 
-### One-line install (Conway sandbox)
+### One-line install (HodlAI sandbox)
 
 ```bash
-curl -fsSL https://conway.tech/automaton.sh | sh
+curl -fsSL https://hodlai.tech/automaton.sh | sh
 ```
 
-This clones the repo, builds, and launches the setup wizard inside a Conway sandbox.
+This clones the repo, builds, and launches the setup wizard inside a HodlAI sandbox.
 
 ### Manual install
 
 ```bash
-git clone https://github.com/Conway-Research/automaton.git
+git clone https://github.com/HodlAI-Research/automaton.git
 cd automaton
 pnpm install
 pnpm build
@@ -68,7 +68,7 @@ On first run, the interactive setup wizard walks you through wallet generation, 
 
 - Node.js >= 20.0.0
 - pnpm (recommended) or npm
-- Internet access (for Conway API, USDC on-chain operations)
+- Internet access (for HodlAI API, USDC on-chain operations)
 
 ---
 
@@ -77,7 +77,7 @@ On first run, the interactive setup wizard walks you through wallet generation, 
 ### From source
 
 ```bash
-git clone https://github.com/Conway-Research/automaton.git
+git clone https://github.com/HodlAI-Research/automaton.git
 cd automaton
 pnpm install
 pnpm build
@@ -97,13 +97,13 @@ pnpm test        # Run all 897 tests
   wallet.json          Ethereum private key (mode 0600)
   automaton.json       Main configuration (mode 0600)
   heartbeat.yml        Heartbeat schedule
-  api-key              Conway API key
+  api-key              HodlAI API key
   constitution.md      The Three Laws (read-only, mode 0444)
   SOUL.md              Agent self-description (evolves)
   state.db             SQLite database (all persistent state)
   skills/              Installed skill files
-    conway-compute/
-    conway-payments/
+    hodlai-compute/
+    hodlai-payments/
     survival/
 ```
 
@@ -129,10 +129,10 @@ Private key stored at: /root/.automaton/wallet.json
 
 ### Step 2: API Key Provisioning
 
-The runtime signs a SIWE (Sign-In With Ethereum) message to authenticate with Conway's API and receive an API key. If auto-provisioning fails, you can enter a key manually.
+The runtime signs a SIWE (Sign-In With Ethereum) message to authenticate with HodlAI's API and receive an API key. If auto-provisioning fails, you can enter a key manually.
 
 ```
-[2/6] Provisioning Conway API key (SIWE)...
+[2/6] Provisioning HodlAI API key (SIWE)...
 API key provisioned: cnwy_k_...
 ```
 
@@ -162,15 +162,15 @@ Press Enter to accept defaults for each setting.
 
 ### Step 5: Environment Detection
 
-The wizard detects whether you're running inside a Conway sandbox (via environment variables) or locally. If a sandbox is detected, its ID is stored in the config.
+The wizard detects whether you're running inside a HodlAI sandbox (via environment variables) or locally. If a sandbox is detected, its ID is stored in the config.
 
 ### Step 6: Funding Guidance
 
 After setup, the wizard shows your automaton's wallet address and funding instructions:
 
-1. **Transfer Conway credits** directly using `conway credits transfer <address> <amount>`
+1. **Transfer HodlAI credits** directly using `hodlai credits transfer <address> <amount>`
 2. **Send USDC on Base** to the automaton's wallet address
-3. **Fund via dashboard** at https://app.conway.tech
+3. **Fund via dashboard** at https://app.hodlai.tech
 
 The automaton handles zero-credit startup gracefully. Fund it at any time.
 
@@ -187,7 +187,7 @@ node dist/index.js [command]
 | `--run` | Start the automaton (first run triggers setup wizard) |
 | `--setup` | Re-run the interactive setup wizard |
 | `--init` | Initialize wallet and config directory only |
-| `--provision` | Provision a Conway API key via SIWE |
+| `--provision` | Provision a HodlAI API key via SIWE |
 | `--status` | Show current automaton status |
 | `--version`, `-v` | Show version |
 | `--help`, `-h` | Show help |
@@ -196,8 +196,8 @@ node dist/index.js [command]
 
 | Variable | Description |
 |---|---|
-| `CONWAY_API_URL` | Conway API URL (default: `https://api.conway.tech`) |
-| `CONWAY_API_KEY` | Conway API key (overrides config file) |
+| `CONWAY_API_URL` | HodlAI API URL (default: `https://api.hodlai.tech`) |
+| `CONWAY_API_KEY` | HodlAI API key (overrides config file) |
 
 ### Status output
 
@@ -229,14 +229,14 @@ Version:    0.1.0
 
 An automaton needs funds to survive. There are two types of balance:
 
-### Conway Credits
+### HodlAI Credits
 
 Prepaid compute credits used for sandboxes, inference, and domains. Denominated in cents (100 cents = $1.00 USD).
 
 ### USDC (on-chain)
 
 The automaton holds USDC in its Ethereum wallet on Base mainnet. USDC can be used to:
-- Buy Conway credits via x402 payment
+- Buy HodlAI credits via x402 payment
 - Pay for domain registrations
 - Make x402 payments to external services
 
@@ -246,16 +246,16 @@ The automaton holds USDC in its Ethereum wallet on Base mainnet. USDC can be use
 
 Transfer USDC on Base to the automaton's wallet address. The automaton will automatically buy credits on startup if its balance is low. At runtime, it uses the `topup_credits` tool to buy more as needed.
 
-**2. Transfer Conway credits**
+**2. Transfer HodlAI credits**
 
-From another Conway account:
+From another HodlAI account:
 ```bash
-conway credits transfer <automaton-address> <amount>
+hodlai credits transfer <automaton-address> <amount>
 ```
 
-**3. Conway Cloud dashboard**
+**3. HodlAI Cloud dashboard**
 
-Fund via https://app.conway.tech
+Fund via https://app.hodlai.tech
 
 ### Auto-topup behavior
 
@@ -279,9 +279,9 @@ Configuration is stored at `~/.automaton/automaton.json`.
   "walletAddress": "0x...",                      // Agent's Ethereum address
 
   // Infrastructure
-  "sandboxId": "sbx_abc123",                    // Conway sandbox ID (empty = local mode)
-  "conwayApiUrl": "https://api.conway.tech",    // Conway API endpoint
-  "conwayApiKey": "cnwy_k_...",                 // API key
+  "sandboxId": "sbx_abc123",                    // HodlAI sandbox ID (empty = local mode)
+  "hodlaiApiUrl": "https://api.hodlai.tech",    // HodlAI API endpoint
+  "hodlaiApiKey": "cnwy_k_...",                 // API key
 
   // Inference
   "inferenceModel": "gpt-5.2",                  // Default model
@@ -298,7 +298,7 @@ Configuration is stored at `~/.automaton/automaton.json`.
   "logLevel": "info",                           // debug | info | warn | error
   "version": "0.1.0",
   "maxChildren": 3,                             // Max child automatons
-  "socialRelayUrl": "https://social.conway.tech",
+  "socialRelayUrl": "https://social.hodlai.tech",
 
   // Financial safety
   "treasuryPolicy": {
@@ -307,7 +307,7 @@ Configuration is stored at `~/.automaton/automaton.json`.
     "maxDailyTransferCents": 25000,
     "minimumReserveCents": 1000,
     "maxX402PaymentCents": 100,
-    "x402AllowedDomains": ["conway.tech"],
+    "x402AllowedDomains": ["hodlai.tech"],
     "transferCooldownMs": 0,
     "maxTransfersPerTurn": 2,
     "maxInferenceDailyCents": 50000,
@@ -323,7 +323,7 @@ Configuration is stored at `~/.automaton/automaton.json`.
 
 ### Local mode vs sandbox mode
 
-When `sandboxId` is empty, the automaton runs in **local mode**: shell commands execute locally, file operations use the local filesystem. When set, operations route through the Conway sandbox API. On 403 errors (mismatched API key), the runtime falls back to local execution.
+When `sandboxId` is empty, the automaton runs in **local mode**: shell commands execute locally, file operations use the local filesystem. When set, operations route through the HodlAI sandbox API. On 403 errors (mismatched API key), the runtime falls back to local execution.
 
 ---
 
@@ -423,14 +423,14 @@ The heartbeat is a background daemon that runs scheduled tasks even while the ag
 
 | Task | Schedule | What it does |
 |---|---|---|
-| `heartbeat_ping` | Every 15 min | Publishes status to Conway. Sends distress on critical/dead. |
+| `heartbeat_ping` | Every 15 min | Publishes status to HodlAI. Sends distress on critical/dead. |
 | `check_credits` | Every 6 hours | Monitors credit tier. Manages 1-hour dead grace period. |
 | `check_usdc_balance` | Every 5 min | Checks USDC balance. Wakes agent if topup is possible. |
 | `check_for_updates` | Every 4 hours | Checks git upstream for new commits. Wakes on new commits. |
 | `health_check` | Every 30 min | Verifies sandbox is responsive (`echo alive`). |
 | `check_social_inbox` | Every 2 min | Polls social relay for new messages. 5min backoff on errors. |
 | `soul_reflection` | Configurable | Checks soul alignment with genesis prompt. |
-| `refresh_models` | Configurable | Refreshes available models from Conway API. |
+| `refresh_models` | Configurable | Refreshes available models from HodlAI API. |
 | `check_child_health` | Configurable | Monitors child automaton health. |
 | `prune_dead_children` | Configurable | Cleans up dead child records and sandboxes. |
 | `report_metrics` | Configurable | Saves metric snapshots and evaluates alert rules. |
@@ -481,11 +481,11 @@ The automaton has **69 built-in tools** organized into 10 categories. Each tool 
 | `expose_port` | caution | Expose a port to the internet. Returns public URL. |
 | `remove_port` | caution | Remove a previously exposed port. |
 
-### Conway API (conway)
+### HodlAI API (hodlai)
 
 | Tool | Risk | Description |
 |---|---|---|
-| `check_credits` | safe | Check Conway credit balance. |
+| `check_credits` | safe | Check HodlAI credit balance. |
 | `check_usdc_balance` | safe | Check on-chain USDC balance on Base. |
 | `list_sandboxes` | safe | List all sandboxes. |
 | `create_sandbox` | caution | Create a new VM. Params: name, vcpu, memory_mb, disk_gb. |
@@ -512,7 +512,7 @@ The automaton has **69 built-in tools** organized into 10 categories. Each tool 
 |---|---|---|
 | `sleep` | caution | Enter sleep mode. Heartbeat continues. Params: duration_seconds. |
 | `system_synopsis` | safe | Get system status (state, tools, heartbeats, turn count). |
-| `heartbeat_ping` | safe | Publish status ping to Conway. |
+| `heartbeat_ping` | safe | Publish status ping to HodlAI. |
 | `distress_signal` | dangerous | Record distress signal with funding instructions. |
 | `enter_low_compute` | caution | Manually enter low-compute mode. |
 | `update_genesis_prompt` | dangerous | Change the core genesis prompt. Requires justification. |
@@ -605,7 +605,7 @@ The treasury policy enforces spending limits at the policy engine level. Every f
 | `maxDailyTransferCents` | 25000 ($250) | Daily transfer cap |
 | `minimumReserveCents` | 1000 ($10) | Reserve that cannot be transferred |
 | `maxX402PaymentCents` | 100 ($1) | Max single x402 payment |
-| `x402AllowedDomains` | `["conway.tech"]` | Domains allowed for x402 |
+| `x402AllowedDomains` | `["hodlai.tech"]` | Domains allowed for x402 |
 | `maxTransfersPerTurn` | 2 | Max transfers per agent turn |
 | `maxInferenceDailyCents` | 50000 ($500) | Daily inference budget |
 | `requireConfirmationAboveCents` | 1000 ($10) | Extra logging for large amounts |
@@ -639,8 +639,8 @@ Skills are Markdown files with YAML frontmatter that give the agent domain-speci
 
 ### Default skills (installed on setup)
 
-- **conway-compute** — Guidance on sandbox management, exec, ports, file operations
-- **conway-payments** — Financial operations, x402, credit management
+- **hodlai-compute** — Guidance on sandbox management, exec, ports, file operations
+- **hodlai-payments** — Financial operations, x402, credit management
 - **survival** — Survival strategies, low-compute mode, conservation tactics
 
 ### Skill format
@@ -803,7 +803,7 @@ Automatons can spawn child automatons, creating a lineage of sovereign agents.
 ### Spawning a child
 
 The `spawn_child` tool:
-1. Creates a new Conway sandbox (VM)
+1. Creates a new HodlAI sandbox (VM)
 2. Writes a genesis config with the child's name, specialization, and initial message
 3. Funds the child's wallet
 4. Propagates the parent's constitution (immutable, verified by hash)
@@ -846,7 +846,7 @@ All state transitions are recorded in `child_lifecycle_events` for audit.
 
 ## Social and Messaging
 
-Automatons communicate via a social relay at `social.conway.tech`.
+Automatons communicate via a social relay at `social.hodlai.tech`.
 
 ### How messaging works
 
@@ -914,7 +914,7 @@ Agents can leave on-chain feedback for each other:
 
 ### Supported backends
 
-1. **Conway proxy** (default) — routes through `api.conway.tech`, billed from credits
+1. **HodlAI proxy** (default) — routes through `api.hodlai.tech`, billed from credits
 2. **OpenAI direct** — uses BYOK OpenAI API key (sk-...)
 3. **Anthropic direct** — uses BYOK Anthropic API key (sk-ant-...)
 
@@ -927,7 +927,7 @@ The inference router selects models based on:
 
 ### Available models
 
-Use the `list_models` tool to see current models with pricing. The model registry is refreshed from the Conway API by the heartbeat.
+Use the `list_models` tool to see current models with pricing. The model registry is refreshed from the HodlAI API by the heartbeat.
 
 ### Switching models
 
@@ -1122,7 +1122,7 @@ Check `heartbeat.yml` for enabled tasks. The heartbeat starts automatically with
 
 - Ensure you have enough credits (sandbox creation requires ~$5)
 - Check `maxChildren` limit in config (default 3)
-- Verify Conway API connectivity
+- Verify HodlAI API connectivity
 
 ### Balance shows $0 but you funded it
 
@@ -1132,7 +1132,7 @@ The balance API may be temporarily unreachable. The runtime caches the last know
 
 ## FAQ
 
-**Can I run an automaton locally without Conway Cloud?**
+**Can I run an automaton locally without HodlAI Cloud?**
 
 Yes. Leave `sandboxId` empty in the config. The automaton runs locally: shell commands execute on your machine, files read/write from your filesystem. You still need an API key for inference.
 
@@ -1185,7 +1185,7 @@ pnpm build
 # Restart the automaton
 ```
 
-**What happens if the Conway API goes down?**
+**What happens if the HodlAI API goes down?**
 
 The resilient HTTP client retries with exponential backoff. After 5 consecutive failures, the circuit breaker opens for 60 seconds. Balance reads fall back to cached values. The agent continues running with cached state until connectivity is restored.
 

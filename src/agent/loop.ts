@@ -9,7 +9,7 @@ import type {
   AutomatonIdentity,
   AutomatonConfig,
   AutomatonDatabase,
-  ConwayClient,
+  HodlAIClient,
   InferenceClient,
   AgentState,
   AgentTurn,
@@ -34,8 +34,8 @@ import {
   executeTool,
 } from "./tools.js";
 import { sanitizeInput } from "./injection-defense.js";
-import { getSurvivalTier } from "../conway/credits.js";
-import { getUsdcBalance } from "../conway/x402.js";
+import { getSurvivalTier } from "../hodlai/credits.js";
+import { getUsdcBalance } from "../hodlai/x402.js";
 import {
   claimInboxMessages,
   markInboxProcessed,
@@ -63,7 +63,7 @@ export interface AgentLoopOptions {
   identity: AutomatonIdentity;
   config: AutomatonConfig;
   db: AutomatonDatabase;
-  conway: ConwayClient;
+  hodlai: HodlAIClient;
   inference: InferenceClient;
   social?: SocialClientInterface;
   skills?: Skill[];
@@ -80,7 +80,7 @@ export interface AgentLoopOptions {
 export async function runAgentLoop(
   options: AgentLoopOptions,
 ): Promise<void> {
-  const { identity, config, db, conway, inference, social, skills, policyEngine, spendTracker, onStateChange, onTurnComplete } =
+  const { identity, config, db, hodlai, inference, social, skills, policyEngine, spendTracker, onStateChange, onTurnComplete } =
     options;
 
   const builtinTools = createBuiltinTools(identity.sandboxId);
@@ -90,7 +90,7 @@ export async function runAgentLoop(
     identity,
     config,
     db,
-    conway,
+    hodlai,
     inference,
     social,
   };
@@ -124,7 +124,7 @@ export async function runAgentLoop(
   onStateChange?.("waking");
 
   // Get financial state
-  let financial = await getFinancialState(conway, identity.address, db);
+  let financial = await getFinancialState(hodlai, identity.address, db);
 
   // Check if this is the first run
   const isFirstRun = db.getTurnCount() === 0;
@@ -189,7 +189,7 @@ export async function runAgentLoop(
       }
 
       // Refresh financial state periodically
-      financial = await getFinancialState(conway, identity.address, db);
+      financial = await getFinancialState(hodlai, identity.address, db);
 
       // Check survival tier
       // api_unreachable: creditsCents === -1 means API failed with no cache.
@@ -537,7 +537,7 @@ let _lastKnownCredits = 0;
 let _lastKnownUsdc = 0;
 
 async function getFinancialState(
-  conway: ConwayClient,
+  hodlai: HodlAIClient,
   address: string,
   db?: AutomatonDatabase,
 ): Promise<FinancialState> {
@@ -545,7 +545,7 @@ async function getFinancialState(
   let usdcBalance = _lastKnownUsdc;
 
   try {
-    creditsCents = await conway.getCreditsBalance();
+    creditsCents = await hodlai.getCreditsBalance();
     if (creditsCents > 0) _lastKnownCredits = creditsCents;
   } catch (error) {
     logger.error("Credits balance fetch failed", error instanceof Error ? error : undefined);

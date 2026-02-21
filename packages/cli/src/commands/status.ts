@@ -4,8 +4,8 @@
  * Show the current status of an automaton.
  */
 
-import { loadConfig, resolvePath } from "@conway/automaton/config.js";
-import { createDatabase } from "@conway/automaton/state/database.js";
+import { loadConfig, resolvePath } from "@hodlai/automaton/config.js";
+import { createDatabase } from "@hodlai/automaton/state/database.js";
 
 const config = loadConfig();
 if (!config) {

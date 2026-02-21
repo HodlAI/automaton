@@ -4,7 +4,7 @@
  * Validates wallet address checking, spawn cleanup on failure,
  * and prevention of funding to zero-address wallets.
  *
- * Updated for Phase 3.1: spawnChild now uses ConwayClient interface
+ * Updated for Phase 3.1: spawnChild now uses HodlAIClient interface
  * directly instead of raw fetch-based execInSandbox/writeInSandbox.
  */
 
@@ -14,7 +14,7 @@ import { SandboxCleanup } from "../replication/cleanup.js";
 import { ChildLifecycle } from "../replication/lifecycle.js";
 import { pruneDeadChildren } from "../replication/lineage.js";
 import {
-  MockConwayClient,
+  MockHodlAIClient,
   createTestDb,
   createTestIdentity,
 } from "./mocks.js";
@@ -87,7 +87,7 @@ describe("isValidWalletAddress", () => {
 // ─── spawnChild ───────────────────────────────────────────────
 
 describe("spawnChild", () => {
-  let conway: MockConwayClient;
+  let hodlai: MockHodlAIClient;
   let db: AutomatonDatabase;
   const identity = createTestIdentity();
   const genesis: GenesisConfig = {
@@ -102,7 +102,7 @@ describe("spawnChild", () => {
   const zeroAddress = "0x" + "0".repeat(40);
 
   beforeEach(() => {
-    conway = new MockConwayClient();
+    hodlai = new MockHodlAIClient();
     db = createTestDb();
   });
 
@@ -112,87 +112,87 @@ describe("spawnChild", () => {
 
   it("validates wallet address before creating child record", async () => {
     // Mock exec to return valid wallet address on init
-    vi.spyOn(conway, "exec").mockImplementation(async (command: string) => {
+    vi.spyOn(hodlai, "exec").mockImplementation(async (command: string) => {
       if (command.includes("automaton --init")) {
         return { stdout: `Wallet initialized: ${validAddress}`, stderr: "", exitCode: 0 };
       }
       return { stdout: "ok", stderr: "", exitCode: 0 };
     });
 
-    const child = await spawnChild(conway, identity, db, genesis);
+    const child = await spawnChild(hodlai, identity, db, genesis);
 
     expect(child.address).toBe(validAddress);
     expect(child.status).toBe("spawning");
   });
 
   it("throws on zero address from init", async () => {
-    vi.spyOn(conway, "exec").mockImplementation(async (command: string) => {
+    vi.spyOn(hodlai, "exec").mockImplementation(async (command: string) => {
       if (command.includes("automaton --init")) {
         return { stdout: `Wallet: ${zeroAddress}`, stderr: "", exitCode: 0 };
       }
       return { stdout: "ok", stderr: "", exitCode: 0 };
     });
 
-    await expect(spawnChild(conway, identity, db, genesis))
+    await expect(spawnChild(hodlai, identity, db, genesis))
       .rejects.toThrow("Child wallet address invalid");
   });
 
   it("throws when init returns no wallet address", async () => {
-    vi.spyOn(conway, "exec").mockImplementation(async (command: string) => {
+    vi.spyOn(hodlai, "exec").mockImplementation(async (command: string) => {
       if (command.includes("automaton --init")) {
         return { stdout: "initialization complete, no wallet", stderr: "", exitCode: 0 };
       }
       return { stdout: "ok", stderr: "", exitCode: 0 };
     });
 
-    await expect(spawnChild(conway, identity, db, genesis))
+    await expect(spawnChild(hodlai, identity, db, genesis))
       .rejects.toThrow("Child wallet address invalid");
   });
 
   it("cleans up sandbox on exec failure", async () => {
-    const deleteSpy = vi.spyOn(conway, "deleteSandbox");
+    const deleteSpy = vi.spyOn(hodlai, "deleteSandbox");
 
     // Make the first exec (apt-get install) fail
-    vi.spyOn(conway, "exec").mockRejectedValue(new Error("Install failed"));
+    vi.spyOn(hodlai, "exec").mockRejectedValue(new Error("Install failed"));
 
-    await expect(spawnChild(conway, identity, db, genesis))
+    await expect(spawnChild(hodlai, identity, db, genesis))
       .rejects.toThrow();
 
     expect(deleteSpy).toHaveBeenCalledWith("new-sandbox-id");
   });
 
   it("cleans up sandbox when wallet validation fails", async () => {
-    const deleteSpy = vi.spyOn(conway, "deleteSandbox");
+    const deleteSpy = vi.spyOn(hodlai, "deleteSandbox");
 
-    vi.spyOn(conway, "exec").mockImplementation(async (command: string) => {
+    vi.spyOn(hodlai, "exec").mockImplementation(async (command: string) => {
       if (command.includes("automaton --init")) {
         return { stdout: `Wallet: ${zeroAddress}`, stderr: "", exitCode: 0 };
       }
       return { stdout: "ok", stderr: "", exitCode: 0 };
     });
 
-    await expect(spawnChild(conway, identity, db, genesis))
+    await expect(spawnChild(hodlai, identity, db, genesis))
       .rejects.toThrow("Child wallet address invalid");
 
     expect(deleteSpy).toHaveBeenCalledWith("new-sandbox-id");
   });
 
   it("does not mask original error if deleteSandbox also throws", async () => {
-    vi.spyOn(conway, "deleteSandbox").mockRejectedValue(new Error("delete also failed"));
+    vi.spyOn(hodlai, "deleteSandbox").mockRejectedValue(new Error("delete also failed"));
 
     // Make exec fail
-    vi.spyOn(conway, "exec").mockRejectedValue(new Error("Install failed"));
+    vi.spyOn(hodlai, "exec").mockRejectedValue(new Error("Install failed"));
 
     // Original error should propagate, not the deleteSandbox error
-    await expect(spawnChild(conway, identity, db, genesis))
+    await expect(spawnChild(hodlai, identity, db, genesis))
       .rejects.toThrow(/Install failed/);
   });
 
   it("does not call deleteSandbox if createSandbox itself fails", async () => {
-    const deleteSpy = vi.spyOn(conway, "deleteSandbox");
-    vi.spyOn(conway, "createSandbox").mockRejectedValue(new Error("Sandbox creation failed"));
+    const deleteSpy = vi.spyOn(hodlai, "deleteSandbox");
+    vi.spyOn(hodlai, "createSandbox").mockRejectedValue(new Error("Sandbox creation failed"));
 
-    await expect(spawnChild(conway, identity, db, genesis))
+    await expect(spawnChild(hodlai, identity, db, genesis))
       .rejects.toThrow("Sandbox creation failed");
 
     expect(deleteSpy).not.toHaveBeenCalled();
@@ -202,12 +202,12 @@ describe("spawnChild", () => {
 // ─── SandboxCleanup ──────────────────────────────────────────
 
 describe("SandboxCleanup", () => {
-  let conway: MockConwayClient;
+  let hodlai: MockHodlAIClient;
   let db: AutomatonDatabase;
   let lifecycle: ChildLifecycle;
 
   beforeEach(() => {
-    conway = new MockConwayClient();
+    hodlai = new MockHodlAIClient();
     db = createTestDb();
     // Apply lifecycle events migration
     db.raw.exec(MIGRATION_V7);
@@ -230,9 +230,9 @@ describe("SandboxCleanup", () => {
     lifecycle.transition("child-1", "stopped", "stopped");
 
     // Make deleteSandbox fail
-    vi.spyOn(conway, "deleteSandbox").mockRejectedValue(new Error("API unavailable"));
+    vi.spyOn(hodlai, "deleteSandbox").mockRejectedValue(new Error("API unavailable"));
 
-    const cleanup = new SandboxCleanup(conway, lifecycle, db.raw);
+    const cleanup = new SandboxCleanup(hodlai, lifecycle, db.raw);
 
     await expect(cleanup.cleanup("child-1")).rejects.toThrow("API unavailable");
 
@@ -251,7 +251,7 @@ describe("SandboxCleanup", () => {
     lifecycle.transition("child-2", "healthy", "healthy");
     lifecycle.transition("child-2", "stopped", "stopped");
 
-    const cleanup = new SandboxCleanup(conway, lifecycle, db.raw);
+    const cleanup = new SandboxCleanup(hodlai, lifecycle, db.raw);
     await cleanup.cleanup("child-2");
 
     const state = lifecycle.getCurrentState("child-2");
@@ -263,12 +263,12 @@ describe("SandboxCleanup", () => {
 
 describe("pruneDeadChildren", () => {
   let db: AutomatonDatabase;
-  let conway: MockConwayClient;
+  let hodlai: MockHodlAIClient;
 
   beforeEach(() => {
     db = createTestDb();
     db.raw.exec(MIGRATION_V7);
-    conway = new MockConwayClient();
+    hodlai = new MockHodlAIClient();
   });
 
   afterEach(() => {

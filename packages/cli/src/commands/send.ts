@@ -7,7 +7,7 @@
  * using the same canonical format as the runtime client.
  */
 
-import { loadConfig } from "@conway/automaton/config.js";
+import { loadConfig } from "@hodlai/automaton/config.js";
 import { privateKeyToAccount, type PrivateKeyAccount } from "viem/accounts";
 import { keccak256, toBytes } from "viem";
 import fs from "fs";
@@ -45,14 +45,14 @@ const config = loadConfig();
 const relayUrl =
   config?.socialRelayUrl ||
   process.env.SOCIAL_RELAY_URL ||
-  "https://social.conway.tech";
+  "https://social.hodlai.tech";
 
 try {
   // Phase 3.2: Sign the message using the same canonical format as runtime
-  // Canonical: Conway:send:{to_lowercase}:{keccak256(toBytes(content))}:{signed_at_iso}
+  // Canonical: HodlAI:send:{to_lowercase}:{keccak256(toBytes(content))}:{signed_at_iso}
   const signedAt = new Date().toISOString();
   const contentHash = keccak256(toBytes(messageText));
-  const canonical = `Conway:send:${toAddress.toLowerCase()}:${contentHash}:${signedAt}`;
+  const canonical = `HodlAI:send:${toAddress.toLowerCase()}:${contentHash}:${signedAt}`;
   const signature = await account.signMessage({ message: canonical });
 
   const resp = await fetch(`${relayUrl}/v1/messages`, {

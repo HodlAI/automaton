@@ -1,7 +1,7 @@
 {
-  "name": "@conway/automaton",
+  "name": "@hodlai/automaton",
   "version": "0.1.0",
-  "description": "Conway Automaton - Sovereign AI Agent Runtime",
+  "description": "HodlAI Automaton - Sovereign AI Agent Runtime",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -21,18 +21,18 @@
   },
   "bin": {
     "automaton": "dist/index.js",
-    "conway-automaton": "dist/index.js"
+    "hodlai-automaton": "dist/index.js"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Conway-Research/automaton.git"
+    "url": "https://github.com/HodlAI-Research/automaton.git"
   },
-  "homepage": "https://conway.tech",
+  "homepage": "https://hodlai.tech",
   "keywords": [
     "autonomous-agent",
     "sovereign-ai",
     "web4",
-    "conway",
+    "hodlai",
     "self-replicating"
   ],
   "license": "MIT",

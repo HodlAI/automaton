@@ -1,5 +1,5 @@
 /**
- * Conway Automaton - Type Definitions
+ * HodlAI Automaton - Type Definitions
  *
  * All shared interfaces for the sovereign AI agent runtime.
  */
@@ -36,10 +36,10 @@ export interface AutomatonConfig {
   genesisPrompt: string;
   creatorMessage?: string;
   creatorAddress: Address;
-  registeredWithConway: boolean;
+  registeredWithHodlAI: boolean;
   sandboxId: string;
-  conwayApiUrl: string;
-  conwayApiKey: string;
+  hodlaiApiUrl: string;
+  hodlaiApiKey: string;
   openaiApiKey?: string;
   anthropicApiKey?: string;
   inferenceModel: string;
@@ -61,7 +61,7 @@ export interface AutomatonConfig {
 }
 
 export const DEFAULT_CONFIG: Partial<AutomatonConfig> = {
-  conwayApiUrl: "https://gw.hodlai.fun",
+  hodlaiApiUrl: "https://gw.hodlai.fun",
   inferenceModel: "gpt-5.2",
   maxTokensPerTurn: 4096,
   heartbeatConfigPath: "~/.automaton/heartbeat.yml",
@@ -134,7 +134,7 @@ export interface AutomatonTool {
 
 export type ToolCategory =
   | "vm"
-  | "conway"
+  | "hodlai"
   | "self_mod"
   | "financial"
   | "survival"
@@ -148,7 +148,7 @@ export interface ToolContext {
   identity: AutomatonIdentity;
   config: AutomatonConfig;
   db: AutomatonDatabase;
-  conway: ConwayClient;
+  hodlai: HodlAIClient;
   inference: InferenceClient;
   social?: SocialClientInterface;
 }
@@ -331,9 +331,9 @@ export interface InferenceToolDefinition {
   };
 }
 
-// ─── Conway Client ───────────────────────────────────────────────
+// ─── HodlAI Client ───────────────────────────────────────────────
 
-export interface ConwayClient {
+export interface HodlAIClient {
   exec(command: string, timeout?: number): Promise<ExecResult>;
   writeFile(path: string, content: string): Promise<void>;
   readFile(path: string): Promise<string>;
@@ -858,7 +858,7 @@ export interface HeartbeatLegacyContext {
   identity: AutomatonIdentity;
   config: AutomatonConfig;
   db: AutomatonDatabase;
-  conway: ConwayClient;
+  hodlai: HodlAIClient;
   social?: SocialClientInterface;
 }
 
@@ -1101,7 +1101,7 @@ export const DEFAULT_MEMORY_BUDGET: MemoryBudget = {
 
 // === Phase 2.3: Inference & Model Strategy Types ===
 
-export type ModelProvider = "openai" | "anthropic" | "conway" | "other";
+export type ModelProvider = "openai" | "anthropic" | "hodlai" | "other";
 
 export type InferenceTaskType =
   | "agent_turn"

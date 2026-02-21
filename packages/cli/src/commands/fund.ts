@@ -1,10 +1,10 @@
 /**
  * automaton-cli fund <amount> [--to 0x...]
  *
- * Transfer Conway credits using the configured Conway API key.
+ * Transfer HodlAI credits using the configured HodlAI API key.
  */
 
-import { loadConfig } from "@conway/automaton/config.js";
+import { loadConfig } from "@hodlai/automaton/config.js";
 
 const args = process.argv.slice(3);
 const amount = args[0];
@@ -25,8 +25,8 @@ if (!config) {
   process.exit(1);
 }
 
-if (!config.conwayApiKey) {
-  console.log("No Conway API key found in automaton config.");
+if (!config.hodlaiApiKey) {
+  console.log("No HodlAI API key found in automaton config.");
   process.exit(1);
 }
 
@@ -44,7 +44,7 @@ const payload = {
   note: `fund via automaton-cli (${config.name})`,
 };
 
-const apiUrl = config.conwayApiUrl || "https://api.conway.tech";
+const apiUrl = config.hodlaiApiUrl || "https://api.hodlai.tech";
 const paths = ["/v1/credits/transfer", "/v1/credits/transfers"];
 
 let success: any | null = null;
@@ -55,7 +55,7 @@ for (const path of paths) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: config.conwayApiKey,
+      Authorization: config.hodlaiApiKey,
     },
     body: JSON.stringify(payload),
   });
@@ -85,7 +85,7 @@ const balanceAfter = success.balance_after_cents ?? success.new_balance_cents;
 
 console.log(`
 Transfer submitted.
-From key:  ${maskKey(config.conwayApiKey)}
+From key:  ${maskKey(config.hodlaiApiKey)}
 To:        ${destination}
 Amount:    $${(amountCents / 100).toFixed(2)} (${amountCents} cents)
 Status:    ${status}

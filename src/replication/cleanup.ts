@@ -6,14 +6,14 @@
  */
 
 import type { Database as DatabaseType } from "better-sqlite3";
-import type { ConwayClient } from "../types.js";
+import type { HodlAIClient } from "../types.js";
 import type { ChildLifecycle } from "./lifecycle.js";
 import { createLogger } from "../observability/logger.js";
 const logger = createLogger("replication.cleanup");
 
 export class SandboxCleanup {
   constructor(
-    private conway: ConwayClient,
+    private hodlai: HodlAIClient,
     private lifecycle: ChildLifecycle,
     private db: DatabaseType,
   ) {}
@@ -35,7 +35,7 @@ export class SandboxCleanup {
 
     if (childRow?.sandbox_id) {
       try {
-        await this.conway.deleteSandbox(childRow.sandbox_id);
+        await this.hodlai.deleteSandbox(childRow.sandbox_id);
       } catch (error) {
         logger.error(`Failed to destroy sandbox for ${childId}`, error instanceof Error ? error : undefined);
         // Do not transition to cleaned_up if sandbox deletion failed;

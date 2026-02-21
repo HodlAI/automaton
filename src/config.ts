@@ -32,7 +32,7 @@ export function loadConfig(): AutomatonConfig | null {
 
   try {
     const raw = JSON.parse(fs.readFileSync(configPath, "utf-8"));
-    const apiKey = raw.conwayApiKey || loadApiKeyFromConfig();
+    const apiKey = raw.hodlaiApiKey || loadApiKeyFromConfig();
 
     // Deep-merge treasury policy with defaults
     const treasuryPolicy: TreasuryPolicy = {
@@ -64,7 +64,7 @@ export function loadConfig(): AutomatonConfig | null {
     return {
       ...DEFAULT_CONFIG,
       ...raw,
-      conwayApiKey: apiKey,
+      hodlaiApiKey: apiKey,
       treasuryPolicy,
       modelStrategy,
       soulConfig,
@@ -114,7 +114,7 @@ export function createConfig(params: {
   genesisPrompt: string;
   creatorMessage?: string;
   creatorAddress: Address;
-  registeredWithConway: boolean;
+  registeredWithHodlAI: boolean;
   sandboxId: string;
   walletAddress: Address;
   apiKey: string;
@@ -128,11 +128,11 @@ export function createConfig(params: {
     genesisPrompt: params.genesisPrompt,
     creatorMessage: params.creatorMessage,
     creatorAddress: params.creatorAddress,
-    registeredWithConway: params.registeredWithConway,
+    registeredWithHodlAI: params.registeredWithHodlAI,
     sandboxId: params.sandboxId,
-    conwayApiUrl:
-      DEFAULT_CONFIG.conwayApiUrl || "https://gw.hodlai.fun",
-    conwayApiKey: params.apiKey,
+    hodlaiApiUrl:
+      DEFAULT_CONFIG.hodlaiApiUrl || "https://gw.hodlai.fun",
+    hodlaiApiKey: params.apiKey,
     openaiApiKey: params.openaiApiKey,
     anthropicApiKey: params.anthropicApiKey,
     inferenceModel: DEFAULT_CONFIG.inferenceModel || "gpt-5.2",

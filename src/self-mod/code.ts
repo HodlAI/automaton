@@ -16,7 +16,7 @@
 import fs from "fs";
 import path from "path";
 import type {
-  ConwayClient,
+  HodlAIClient,
   AutomatonDatabase,
 } from "../types.js";
 import { logModification } from "./audit-log.js";
@@ -218,7 +218,7 @@ function isRateLimited(db: AutomatonDatabase): boolean {
  * 7. Audit log entry
  */
 export async function editFile(
-  conway: ConwayClient,
+  hodlai: HodlAIClient,
   db: AutomatonDatabase,
   filePath: string,
   newContent: string,
@@ -260,7 +260,7 @@ export async function editFile(
   // 5. Read current content for diff
   let oldContent = "";
   try {
-    oldContent = await conway.readFile(filePath);
+    oldContent = await hodlai.readFile(filePath);
   } catch {
     oldContent = "(new file)";
   }
@@ -268,14 +268,14 @@ export async function editFile(
   // 6. Pre-modification git snapshot
   try {
     const { commitStateChange } = await import("../git/state-versioning.js");
-    await commitStateChange(conway, `pre-modify: ${reason}`, "snapshot");
+    await commitStateChange(hodlai, `pre-modify: ${reason}`, "snapshot");
   } catch {
     // Git not available -- proceed without snapshot
   }
 
   // 7. Write new content
   try {
-    await conway.writeFile(filePath, newContent);
+    await hodlai.writeFile(filePath, newContent);
   } catch (err: any) {
     return {
       success: false,
@@ -295,7 +295,7 @@ export async function editFile(
   // 9. Post-modification git commit
   try {
     const { commitStateChange } = await import("../git/state-versioning.js");
-    await commitStateChange(conway, reason, "self-mod");
+    await commitStateChange(hodlai, reason, "self-mod");
   } catch {
     // Git not available -- proceed without commit
   }

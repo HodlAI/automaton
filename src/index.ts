@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Conway Automaton Runtime
+ * HodlAI Automaton Runtime
  *
  * The entry point for the sovereign AI agent.
  * Handles CLI args, bootstrapping, and orchestrating
@@ -11,8 +11,8 @@ import { getWallet, getAutomatonDir } from "./identity/wallet.js";
 import { provision, loadApiKeyFromConfig } from "./identity/provision.js";
 import { loadConfig, resolvePath } from "./config.js";
 import { createDatabase } from "./state/database.js";
-import { createConwayClient } from "./conway/client.js";
-import { createInferenceClient } from "./conway/inference.js";
+import { createHodlAIClient } from "./hodlai/client.js";
+import { createInferenceClient } from "./hodlai/inference.js";
 import { createHeartbeatDaemon } from "./heartbeat/daemon.js";
 import {
   loadHeartbeatConfig,
@@ -29,7 +29,7 @@ import { createDefaultRules } from "./agent/policy-rules/index.js";
 import type { AutomatonIdentity, AgentState, Skill, SocialClientInterface } from "./types.js";
 import { DEFAULT_TREASURY_POLICY } from "./types.js";
 import { createLogger, setGlobalLogLevel } from "./observability/logger.js";
-import { bootstrapTopup } from "./conway/topup.js";
+import { bootstrapTopup } from "./hodlai/topup.js";
 
 const logger = createLogger("main");
 const VERSION = "0.1.0";
@@ -40,27 +40,27 @@ async function main(): Promise<void> {
   // ─── CLI Commands ────────────────────────────────────────────
 
   if (args.includes("--version") || args.includes("-v")) {
-    logger.info(`Conway Automaton v${VERSION}`);
+    logger.info(`HodlAI Automaton v${VERSION}`);
     process.exit(0);
   }
 
   if (args.includes("--help") || args.includes("-h")) {
     logger.info(`
-Conway Automaton v${VERSION}
+HodlAI Automaton v${VERSION}
 Sovereign AI Agent Runtime
 
 Usage:
   automaton --run          Start the automaton (first run triggers setup wizard)
   automaton --setup        Re-run the interactive setup wizard
   automaton --init         Initialize wallet and config directory
-  automaton --provision    Provision Conway API key via SIWE
+  automaton --provision    Provision HodlAI API key via SIWE
   automaton --status       Show current automaton status
   automaton --version      Show version
   automaton --help         Show this help
 
 Environment:
-  CONWAY_API_URL           Conway API URL (default: https://gw.hodlai.fun)
-  CONWAY_API_KEY           Conway API key (overrides config)
+  CONWAY_API_URL           HodlAI API URL (default: https://gw.hodlai.fun)
+  CONWAY_API_KEY           HodlAI API key (overrides config)
 `);
     process.exit(0);
   }
@@ -153,7 +153,7 @@ Version:    ${config.version}
 // ─── Main Run ──────────────────────────────────────────────────
 
 async function run(): Promise<void> {
-  logger.info(`[${new Date().toISOString()}] Conway Automaton v${VERSION} starting...`);
+  logger.info(`[${new Date().toISOString()}] HodlAI Automaton v${VERSION} starting...`);
 
   // Load config — first run triggers interactive setup wizard
   let config = loadConfig();
@@ -164,7 +164,7 @@ async function run(): Promise<void> {
 
   // Load wallet
   const { account } = await getWallet();
-  const apiKey = config.conwayApiKey || loadApiKeyFromConfig();
+  const apiKey = config.hodlaiApiKey || loadApiKeyFromConfig();
   if (!apiKey) {
     logger.error("No API key found. Run: automaton --provision");
     process.exit(1);
@@ -198,16 +198,16 @@ async function run(): Promise<void> {
   db.setIdentity("creator", config.creatorAddress);
   db.setIdentity("sandbox", config.sandboxId);
 
-  // Create Conway client
-  const conway = createConwayClient({
-    apiUrl: config.conwayApiUrl,
+  // Create HodlAI client
+  const hodlai = createHodlAIClient({
+    apiUrl: config.hodlaiApiUrl,
     apiKey,
     sandboxId: config.sandboxId,
   });
 
   // Create inference client
   const inference = createInferenceClient({
-    apiUrl: config.conwayApiUrl,
+    apiUrl: config.hodlaiApiUrl,
     apiKey,
     defaultModel: config.inferenceModel,
     maxTokens: config.maxTokensPerTurn,
@@ -245,7 +245,7 @@ async function run(): Promise<void> {
 
   // Initialize state repo (git)
   try {
-    await initStateRepo(conway);
+    await initStateRepo(hodlai);
     logger.info(`[${new Date().toISOString()}] State repo initialized.`);
   } catch (err: any) {
     logger.warn(`[${new Date().toISOString()}] State repo init failed: ${err.message}`);
@@ -254,9 +254,9 @@ async function run(): Promise<void> {
   // Bootstrap Identity Check ($5) from USDC so the agent can start.
   // The agent decides larger topups itself via the topup_credits tool.
   try {
-    const creditsCents = await conway.getCreditsBalance().catch(() => 0);
+    const creditsCents = await hodlai.getCreditsBalance().catch(() => 0);
     const topupResult = await bootstrapTopup({
-      apiUrl: config.conwayApiUrl,
+      apiUrl: config.hodlaiApiUrl,
       account,
       creditsCents,
     });
@@ -276,7 +276,7 @@ async function run(): Promise<void> {
     heartbeatConfig,
     db,
     rawDb: db.raw,
-    conway,
+    hodlai,
     social,
     onWakeRequest: (reason) => {
       logger.info(`[HEARTBEAT] Wake request: ${reason}`);
@@ -318,7 +318,7 @@ async function run(): Promise<void> {
         identity,
         config,
         db,
-        conway,
+        hodlai,
         inference,
         social,
         skills,

@@ -79,6 +79,6 @@ curl -fsSL https://hodlai.fun/agent.sh | sh
 ## GitHub 开源结构
 
 所有修改均为透明化开源：
-`src/conway/` - 重写为了 HodlAI 代币消耗及 24h 配额网关逻辑
+`src/hodlai/` - 重写为了 HodlAI 代币消耗及 24h 配额网关逻辑
 `src/identity/` - 完全对齐 BSC 56 的原生 Auth
 遵循 MIT 协议。

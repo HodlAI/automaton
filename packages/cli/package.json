@@ -1,7 +1,7 @@
 {
-  "name": "@conway/automaton-cli",
+  "name": "@hodlai/automaton-cli",
   "version": "0.1.0",
-  "description": "Conway Automaton - Creator CLI",
+  "description": "HodlAI Automaton - Creator CLI",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -14,7 +14,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@conway/automaton": "workspace:*",
+    "@hodlai/automaton": "workspace:*",
     "chalk": "^5.3.0",
     "viem": "^2.44.2"
   },

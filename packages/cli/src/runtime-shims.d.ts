@@ -1,4 +1,4 @@
-declare module "@conway/automaton/config.js" {
+declare module "@hodlai/automaton/config.js" {
   export interface AutomatonCliConfig {
     name: string;
     walletAddress: string;
@@ -6,8 +6,8 @@ declare module "@conway/automaton/config.js" {
     sandboxId: string;
     dbPath: string;
     inferenceModel: string;
-    conwayApiUrl: string;
-    conwayApiKey: string;
+    hodlaiApiUrl: string;
+    hodlaiApiKey: string;
     openaiApiKey?: string;
     anthropicApiKey?: string;
     socialRelayUrl?: string;
@@ -17,7 +17,7 @@ declare module "@conway/automaton/config.js" {
   export function resolvePath(p: string): string;
 }
 
-declare module "@conway/automaton/state/database.js" {
+declare module "@hodlai/automaton/state/database.js" {
   export interface CliToolCall {
     name: string;
     result: string;

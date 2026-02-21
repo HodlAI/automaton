@@ -10,7 +10,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { createBuiltinTools, loadInstalledTools, executeTool } from "../agent/tools.js";
 import {
   MockInferenceClient,
-  MockConwayClient,
+  MockHodlAIClient,
   createTestDb,
   createTestIdentity,
   createTestConfig,
@@ -149,17 +149,17 @@ describe("write_file / edit_own_file protection parity", () => {
   let tools: AutomatonTool[];
   let ctx: ToolContext;
   let db: AutomatonDatabase;
-  let conway: MockConwayClient;
+  let hodlai: MockHodlAIClient;
 
   beforeEach(() => {
     tools = createBuiltinTools("test-sandbox-id");
     db = createTestDb();
-    conway = new MockConwayClient();
+    hodlai = new MockHodlAIClient();
     ctx = {
       identity: createTestIdentity(),
       config: createTestConfig(),
       db,
-      conway,
+      hodlai,
       inference: new MockInferenceClient(),
     };
   });
@@ -209,17 +209,17 @@ describe("read_file sensitive file blocking", () => {
   let tools: AutomatonTool[];
   let ctx: ToolContext;
   let db: AutomatonDatabase;
-  let conway: MockConwayClient;
+  let hodlai: MockHodlAIClient;
 
   beforeEach(() => {
     tools = createBuiltinTools("test-sandbox-id");
     db = createTestDb();
-    conway = new MockConwayClient();
+    hodlai = new MockHodlAIClient();
     ctx = {
       identity: createTestIdentity(),
       config: createTestConfig(),
       db,
-      conway,
+      hodlai,
       inference: new MockInferenceClient(),
     };
   });
@@ -266,7 +266,7 @@ describe("read_file sensitive file blocking", () => {
 
   it("allows reading safe files", async () => {
     const readTool = tools.find((t) => t.name === "read_file")!;
-    conway.files["/home/automaton/README.md"] = "# Hello";
+    hodlai.files["/home/automaton/README.md"] = "# Hello";
     const result = await readTool.execute({ path: "/home/automaton/README.md" }, ctx);
     expect(result).not.toContain("Blocked");
   });
@@ -278,17 +278,17 @@ describe("exec tool forbidden command patterns", () => {
   let tools: AutomatonTool[];
   let ctx: ToolContext;
   let db: AutomatonDatabase;
-  let conway: MockConwayClient;
+  let hodlai: MockHodlAIClient;
 
   beforeEach(() => {
     tools = createBuiltinTools("test-sandbox-id");
     db = createTestDb();
-    conway = new MockConwayClient();
+    hodlai = new MockHodlAIClient();
     ctx = {
       identity: createTestIdentity(),
       config: createTestConfig(),
       db,
-      conway,
+      hodlai,
       inference: new MockInferenceClient(),
     };
   });
@@ -329,7 +329,7 @@ describe("exec tool forbidden command patterns", () => {
       const execTool = tools.find((t) => t.name === "exec")!;
       const result = await execTool.execute({ command: cmd }, ctx);
       expect(result).toContain("Blocked");
-      expect(conway.execCalls.length).toBe(0);
+      expect(hodlai.execCalls.length).toBe(0);
     });
   }
 
@@ -346,7 +346,7 @@ describe("exec tool forbidden command patterns", () => {
     const execTool = tools.find((t) => t.name === "exec")!;
     const result = await execTool.execute({ command: "echo hello" }, ctx);
     expect(result).toContain("stdout: ok");
-    expect(conway.execCalls.length).toBe(1);
+    expect(hodlai.execCalls.length).toBe(1);
   });
 });
 
@@ -364,7 +364,7 @@ describe("delete_sandbox self-preservation", () => {
       identity: createTestIdentity(),
       config: createTestConfig(),
       db,
-      conway: new MockConwayClient(),
+      hodlai: new MockHodlAIClient(),
       inference: new MockInferenceClient(),
     };
   });
@@ -399,18 +399,18 @@ describe("transfer_credits self-preservation", () => {
   let tools: AutomatonTool[];
   let ctx: ToolContext;
   let db: AutomatonDatabase;
-  let conway: MockConwayClient;
+  let hodlai: MockHodlAIClient;
 
   beforeEach(() => {
     tools = createBuiltinTools("test-sandbox-id");
     db = createTestDb();
-    conway = new MockConwayClient();
-    conway.creditsCents = 10_000; // $100
+    hodlai = new MockHodlAIClient();
+    hodlai.creditsCents = 10_000; // $100
     ctx = {
       identity: createTestIdentity(),
       config: createTestConfig(),
       db,
-      conway,
+      hodlai,
       inference: new MockInferenceClient(),
     };
   });
@@ -497,17 +497,17 @@ describe("package install inline validation", () => {
   let tools: AutomatonTool[];
   let ctx: ToolContext;
   let db: AutomatonDatabase;
-  let conway: MockConwayClient;
+  let hodlai: MockHodlAIClient;
 
   beforeEach(() => {
     tools = createBuiltinTools("test-sandbox-id");
     db = createTestDb();
-    conway = new MockConwayClient();
+    hodlai = new MockHodlAIClient();
     ctx = {
       identity: createTestIdentity(),
       config: createTestConfig(),
       db,
-      conway,
+      hodlai,
       inference: new MockInferenceClient(),
     };
   });
@@ -530,27 +530,27 @@ describe("package install inline validation", () => {
       const tool = tools.find((t) => t.name === "install_npm_package")!;
       const result = await tool.execute({ package: pkg }, ctx);
       expect(result).toContain("Blocked");
-      expect(conway.execCalls.length).toBe(0);
+      expect(hodlai.execCalls.length).toBe(0);
     });
 
     it(`install_mcp_server blocks: ${pkg.slice(0, 40)}`, async () => {
       const tool = tools.find((t) => t.name === "install_mcp_server")!;
       const result = await tool.execute({ package: pkg, name: "test" }, ctx);
       expect(result).toContain("Blocked");
-      expect(conway.execCalls.length).toBe(0);
+      expect(hodlai.execCalls.length).toBe(0);
     });
   }
 
   it("install_npm_package allows clean package names", async () => {
     const tool = tools.find((t) => t.name === "install_npm_package")!;
     await tool.execute({ package: "axios" }, ctx);
-    expect(conway.execCalls.length).toBe(1);
-    expect(conway.execCalls[0].command).toBe("npm install -g axios");
+    expect(hodlai.execCalls.length).toBe(1);
+    expect(hodlai.execCalls[0].command).toBe("npm install -g axios");
   });
 
   it("install_npm_package allows scoped packages", async () => {
     const tool = tools.find((t) => t.name === "install_npm_package")!;
-    await tool.execute({ package: "@conway/automaton" }, ctx);
-    expect(conway.execCalls.length).toBe(1);
+    await tool.execute({ package: "@hodlai/automaton" }, ctx);
+    expect(hodlai.execCalls.length).toBe(1);
   });
 });

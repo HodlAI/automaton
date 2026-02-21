@@ -113,7 +113,7 @@ function createMockContext(rawDb?: Database.Database): ToolContext {
     identity: {} as any,
     config: {} as any,
     db: rawDb ? { raw: rawDb } as any : {} as any,
-    conway: {} as any,
+    hodlai: {} as any,
     inference: {} as any,
   };
 }
@@ -501,7 +501,7 @@ describe("Financial Phase 1 Rules", () => {
       const tool = createMockTool({
         name: "chat",
         riskLevel: "safe",
-        category: "conway",
+        category: "hodlai",
       });
       const spendTracker = createMockSpendTracker({
         getDailySpend: (category: SpendCategory) =>
@@ -520,7 +520,7 @@ describe("Financial Phase 1 Rules", () => {
       const tool = createMockTool({
         name: "chat",
         riskLevel: "safe",
-        category: "conway",
+        category: "hodlai",
       });
       const spendTracker = createMockSpendTracker({
         getDailySpend: (category: SpendCategory) =>

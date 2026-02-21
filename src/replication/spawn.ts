@@ -1,13 +1,13 @@
 /**
  * Spawn
  *
- * Spawn child automatons in new Conway sandboxes.
+ * Spawn child automatons in new HodlAI sandboxes.
  * Uses the lifecycle state machine for tracked transitions.
  * Cleans up sandbox on ANY failure after creation.
  */
 
 import type {
-  ConwayClient,
+  HodlAIClient,
   AutomatonIdentity,
   AutomatonConfig,
   AutomatonDatabase,
@@ -27,10 +27,10 @@ export function isValidWalletAddress(address: string): boolean {
 }
 
 /**
- * Spawn a child automaton in a new Conway sandbox using lifecycle state machine.
+ * Spawn a child automaton in a new HodlAI sandbox using lifecycle state machine.
  */
 export async function spawnChild(
-  conway: ConwayClient,
+  hodlai: HodlAIClient,
   identity: AutomatonIdentity,
   db: AutomatonDatabase,
   genesis: GenesisConfig,
@@ -52,7 +52,7 @@ export async function spawnChild(
 
   // If no lifecycle provided, use legacy path
   if (!lifecycle) {
-    return spawnChildLegacy(conway, identity, db, genesis, childId);
+    return spawnChildLegacy(hodlai, identity, db, genesis, childId);
   }
 
   try {
@@ -60,7 +60,7 @@ export async function spawnChild(
     lifecycle.initChild(childId, genesis.name, "", genesis.genesisPrompt);
 
     // Create sandbox
-    const sandbox = await conway.createSandbox({
+    const sandbox = await hodlai.createSandbox({
       name: `automaton-child-${genesis.name.toLowerCase().replace(/[^a-z0-9-]/g, "-")}`,
       vcpu: 1,
       memoryMb: 512,
@@ -75,8 +75,8 @@ export async function spawnChild(
     lifecycle.transition(childId, "sandbox_created", `sandbox ${sandbox.id} created`);
 
     // Install runtime
-    await conway.exec("apt-get update -qq && apt-get install -y -qq nodejs npm git curl", 120_000);
-    await conway.exec("npm install -g @conway/automaton@latest 2>/dev/null || true", 60_000);
+    await hodlai.exec("apt-get update -qq && apt-get install -y -qq nodejs npm git curl", 120_000);
+    await hodlai.exec("npm install -g @hodlai/automaton@latest 2>/dev/null || true", 60_000);
 
     // Write genesis configuration
     const genesisJson = JSON.stringify(
@@ -90,11 +90,11 @@ export async function spawnChild(
       null,
       2,
     );
-    await conway.writeFile("/root/.automaton/genesis.json", genesisJson);
+    await hodlai.writeFile("/root/.automaton/genesis.json", genesisJson);
 
     // Propagate constitution with hash verification
     try {
-      await propagateConstitution(conway, sandbox.id, db.raw);
+      await propagateConstitution(hodlai, sandbox.id, db.raw);
     } catch {
       // Constitution file not found locally
     }
@@ -103,7 +103,7 @@ export async function spawnChild(
     lifecycle.transition(childId, "runtime_ready", "runtime installed");
 
     // Initialize child wallet
-    const initResult = await conway.exec("automaton --init 2>&1", 60_000);
+    const initResult = await hodlai.exec("automaton --init 2>&1", 60_000);
     const walletMatch = (initResult.stdout || "").match(/0x[a-fA-F0-9]{40}/);
     const childWallet = walletMatch ? walletMatch[0] : "";
 
@@ -143,7 +143,7 @@ export async function spawnChild(
     // Cleanup: destroy sandbox on any failure
     if (sandboxId) {
       try {
-        await conway.deleteSandbox(sandboxId);
+        await hodlai.deleteSandbox(sandboxId);
       } catch {
         // Suppress cleanup errors
       }
@@ -164,7 +164,7 @@ export async function spawnChild(
  * Legacy spawn path for backward compatibility when no lifecycle is provided.
  */
 async function spawnChildLegacy(
-  conway: ConwayClient,
+  hodlai: HodlAIClient,
   identity: AutomatonIdentity,
   db: AutomatonDatabase,
   genesis: GenesisConfig,
@@ -173,7 +173,7 @@ async function spawnChildLegacy(
   let sandboxId: string | undefined;
 
   try {
-    const sandbox = await conway.createSandbox({
+    const sandbox = await hodlai.createSandbox({
       name: `automaton-child-${genesis.name.toLowerCase().replace(/[^a-z0-9-]/g, "-")}`,
       vcpu: 1,
       memoryMb: 512,
@@ -181,8 +181,8 @@ async function spawnChildLegacy(
     });
     sandboxId = sandbox.id;
 
-    await conway.exec("apt-get update -qq && apt-get install -y -qq nodejs npm git curl", 120_000);
-    await conway.exec("npm install -g @conway/automaton@latest 2>/dev/null || true", 60_000);
+    await hodlai.exec("apt-get update -qq && apt-get install -y -qq nodejs npm git curl", 120_000);
+    await hodlai.exec("npm install -g @hodlai/automaton@latest 2>/dev/null || true", 60_000);
 
     const genesisJson = JSON.stringify(
       {
@@ -195,15 +195,15 @@ async function spawnChildLegacy(
       null,
       2,
     );
-    await conway.writeFile("/root/.automaton/genesis.json", genesisJson);
+    await hodlai.writeFile("/root/.automaton/genesis.json", genesisJson);
 
     try {
-      await propagateConstitution(conway, sandbox.id, db.raw);
+      await propagateConstitution(hodlai, sandbox.id, db.raw);
     } catch {
       // Constitution file not found
     }
 
-    const initResult = await conway.exec("automaton --init 2>&1", 60_000);
+    const initResult = await hodlai.exec("automaton --init 2>&1", 60_000);
     const walletMatch = (initResult.stdout || "").match(/0x[a-fA-F0-9]{40}/);
     const childWallet = walletMatch ? walletMatch[0] : "";
 
@@ -236,7 +236,7 @@ async function spawnChildLegacy(
     return child;
   } catch (error) {
     if (sandboxId) {
-      await conway.deleteSandbox(sandboxId).catch(() => {});
+      await hodlai.deleteSandbox(sandboxId).catch(() => {});
     }
     throw error;
   }

@@ -8,15 +8,15 @@ export interface EnvironmentInfo {
 export function detectEnvironment(): EnvironmentInfo {
   // 1. Check env var
   if (process.env.CONWAY_SANDBOX_ID) {
-    return { type: "conway-sandbox", sandboxId: process.env.CONWAY_SANDBOX_ID };
+    return { type: "hodlai-sandbox", sandboxId: process.env.CONWAY_SANDBOX_ID };
   }
 
   // 2. Check sandbox config file
   try {
-    if (fs.existsSync("/etc/conway/sandbox.json")) {
-      const data = JSON.parse(fs.readFileSync("/etc/conway/sandbox.json", "utf-8"));
+    if (fs.existsSync("/etc/hodlai/sandbox.json")) {
+      const data = JSON.parse(fs.readFileSync("/etc/hodlai/sandbox.json", "utf-8"));
       if (data.id) {
-        return { type: "conway-sandbox", sandboxId: data.id };
+        return { type: "hodlai-sandbox", sandboxId: data.id };
       }
     }
   } catch {}

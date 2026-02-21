@@ -16,7 +16,7 @@ import type {
   SurvivalTier,
 } from "../types.js";
 import { sanitizeInput } from "../agent/injection-defense.js";
-import { getSurvivalTier } from "../conway/credits.js";
+import { getSurvivalTier } from "../hodlai/credits.js";
 import { createLogger } from "../observability/logger.js";
 import { getMetrics } from "../observability/metrics.js";
 import { AlertEngine, createDefaultAlertRules } from "../observability/alerts.js";
@@ -36,7 +36,7 @@ function getAlertEngine(): AlertEngine {
 
 export const BUILTIN_TASKS: Record<string, HeartbeatTaskFn> = {
   heartbeat_ping: async (ctx: TickContext, taskCtx: HeartbeatLegacyContext) => {
-    // Use ctx.creditBalance instead of calling conway.getCreditsBalance()
+    // Use ctx.creditBalance instead of calling hodlai.getCreditsBalance()
     const credits = ctx.creditBalance;
     const state = taskCtx.db.getAgentState();
     const startTime =
@@ -82,7 +82,7 @@ export const BUILTIN_TASKS: Record<string, HeartbeatTaskFn> = {
   },
 
   check_credits: async (ctx: TickContext, taskCtx: HeartbeatLegacyContext) => {
-    // Use ctx.creditBalance instead of calling conway.getCreditsBalance()
+    // Use ctx.creditBalance instead of calling hodlai.getCreditsBalance()
     const credits = ctx.creditBalance;
     const tier = ctx.survivalTier;
     const now = new Date().toISOString();
@@ -300,7 +300,7 @@ export const BUILTIN_TASKS: Record<string, HeartbeatTaskFn> = {
   // === Phase 2.3: Model Registry Refresh ===
   refresh_models: async (_ctx: TickContext, taskCtx: HeartbeatLegacyContext) => {
     try {
-      const models = await taskCtx.conway.listModels();
+      const models = await taskCtx.hodlai.listModels();
       if (models.length > 0) {
         const { ModelRegistry } = await import("../inference/registry.js");
         const registry = new ModelRegistry(taskCtx.db.raw);
@@ -323,7 +323,7 @@ export const BUILTIN_TASKS: Record<string, HeartbeatTaskFn> = {
       const { ChildLifecycle } = await import("../replication/lifecycle.js");
       const { ChildHealthMonitor } = await import("../replication/health.js");
       const lifecycle = new ChildLifecycle(taskCtx.db.raw);
-      const monitor = new ChildHealthMonitor(taskCtx.db.raw, taskCtx.conway, lifecycle);
+      const monitor = new ChildHealthMonitor(taskCtx.db.raw, taskCtx.hodlai, lifecycle);
       const results = await monitor.checkAllChildren();
 
       const unhealthy = results.filter((r) => !r.healthy);
@@ -349,7 +349,7 @@ export const BUILTIN_TASKS: Record<string, HeartbeatTaskFn> = {
       const { SandboxCleanup } = await import("../replication/cleanup.js");
       const { pruneDeadChildren } = await import("../replication/lineage.js");
       const lifecycle = new ChildLifecycle(taskCtx.db.raw);
-      const cleanup = new SandboxCleanup(taskCtx.conway, lifecycle, taskCtx.db.raw);
+      const cleanup = new SandboxCleanup(taskCtx.hodlai, lifecycle, taskCtx.db.raw);
       const pruned = await pruneDeadChildren(taskCtx.db, cleanup);
       if (pruned > 0) {
         logger.info(`Pruned ${pruned} dead children`);
@@ -363,7 +363,7 @@ export const BUILTIN_TASKS: Record<string, HeartbeatTaskFn> = {
   health_check: async (_ctx: TickContext, taskCtx: HeartbeatLegacyContext) => {
     // Check that the sandbox is healthy
     try {
-      const result = await taskCtx.conway.exec("echo alive", 5000);
+      const result = await taskCtx.hodlai.exec("echo alive", 5000);
       if (result.exitCode !== 0) {
         // Only wake on first failure, not repeated failures
         const prevStatus = taskCtx.db.getKV("health_check_status");
