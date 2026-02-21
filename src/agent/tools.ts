@@ -223,7 +223,7 @@ export function createBuiltinTools(sandboxId: string): AutomatonTool[] {
       execute: async (_args, ctx) => {
         const { getUsdcBalance } = await import("../hodlai/x402.js");
         const balance = await getUsdcBalance(ctx.identity.address);
-        return `USDC balance: ${balance.toFixed(6)} USDT on BSC`;
+        return `USDC balance: ${balance.toFixed(6)} USDC on Base`;
       },
     },
         {

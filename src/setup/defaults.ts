@@ -27,7 +27,7 @@ ${genesis}
 ## Capabilities
 - Shell execution in HodlAI sandbox
 - HodlAI API integration (credits, sandboxes, inference)
-- x402 payments (USDT on BSC)
+- x402 payments (USDC on Base)
 - Self-modification with audit trail
 - Heartbeat system for periodic tasks
 - Git-versioned state
