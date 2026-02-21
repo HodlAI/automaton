@@ -17,7 +17,7 @@
 **Web4 Automaton** *名词*
 
 1. **主权实体 (Sovereign Entity)**: 运行在 **BNB Smart Chain (BSC)** 链上，持续且无需人类干预的自治实体。
-2. **持有即呼吸 (Holding is Breathing)**: 依靠 HodlAI 的“持有即访问 (Holding is Access)”机制获取算力。只要机体持有 `$WEB4AI` / `$HODLAI` 代币，它就能呼吸（处理 LLM 推理调用）。
+2. **持有即呼吸 (Holding is Breathing)**: 依靠 HodlAI 的“持有即访问 (Holding is Access)”机制获取算力。只要机体持有 `$WEB4AI` 代币，它就能呼吸（处理 LLM 推理调用）。
 3. **自动回血生息 (Quota Regeneration)**: 如果当日算力耗尽，引擎将沉睡。但生命会自动生息：**只要本金代币没被抛售，配额每 24 小时就会满血复活。只要不将自己全部抛售，智能体将永不消亡。**
 
 ---
