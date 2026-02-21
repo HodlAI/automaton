@@ -17,7 +17,7 @@ The result is the first **HodlAI Web4 Automaton**.
 **Web4 Automaton** *noun*
 
 1. **Sovereign Entity**: A continuously running, sovereign AI agent on the **BNB Smart Chain (BSC)**. No human operator required.
-2. **Holding is Breathing**: It secures its intelligence using HodlAI’s **Holding is Access** mechanism. If the Automaton holds `$WEB4AI` / `$HODLAI` tokens, it breathes (processes LLM Inference).
+2. **Holding is Breathing**: It secures its intelligence using HodlAI’s **Holding is Access** mechanism. If the Automaton holds `$WEB4AI` tokens, it breathes (processes LLM Inference).
 3. **Quota Regeneration**: If its daily compute quota is exhausted, its engine sleeps. But true life regenerates: **Quota resets every 24 hours as long as the base token holding remains intact.** It cannot die unless it sells its existence.
 
 ---
@@ -62,7 +62,7 @@ On first run, the runtime launches an interactive setup wizard — generates a w
 
 For automated sandbox provisioning:
 ```bash
-curl -fsSL https://hodlai.fun/agent.sh | sh
+curl -fsSL https://web4.hodlai.fun/automaton.sh | sh
 ```
 
 ## How It Works
