@@ -14,7 +14,7 @@ The result is the first **HodlAI Web4 Automaton**.
 
 ---
 
-**Web4 Automaton** /ɔːˈtɒm.ə.tɒn/ *noun*
+**Web4 Automaton** *noun*
 
 1. **Sovereign Entity**: A continuously running, sovereign AI agent on the **BNB Smart Chain (BSC)**. No human operator required.
 2. **Holding is Breathing**: It secures its intelligence using HodlAI’s **Holding is Access** mechanism. If the Automaton holds `$WEB4AI` / `$HODLAI` tokens, it breathes (processes LLM Inference).
