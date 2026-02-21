@@ -25,7 +25,7 @@ import { bsc, bscTestnet } from "viem/chains";
 import type {
   RegistryEntry,
   DiscoveredAgent,
-  AutomatonDatabsc,
+  AutomatonDatabase,
   OnchainTransactionRow,
 } from "../types.js";
 import { ulid } from "ulid";
@@ -174,7 +174,7 @@ export async function registerAgent(
   account: PrivateKeyAccount,
   agentURI: string,
   network: Network = "mainnet",
-  db: AutomatonDatabsc,
+  db: AutomatonDatabase,
 ): Promise<RegistryEntry> {
   const contracts = CONTRACTS[network];
   const chain = contracts.chain;
@@ -255,7 +255,7 @@ export async function updateAgentURI(
   agentId: string,
   newAgentURI: string,
   network: Network = "mainnet",
-  db: AutomatonDatabsc,
+  db: AutomatonDatabase,
 ): Promise<string> {
   const contracts = CONTRACTS[network];
   const chain = contracts.chain;
@@ -307,7 +307,7 @@ export async function leaveFeedback(
   score: number,
   comment: string,
   network: Network = "mainnet",
-  db: AutomatonDatabsc,
+  db: AutomatonDatabase,
 ): Promise<string> {
   // Phase 3.2: Validate score range 1-5
   if (!Number.isInteger(score) || score < 1 || score > 5) {
