@@ -244,8 +244,7 @@ export function createBuiltinTools(sandboxId: string): AutomatonTool[] {
       execute: async (args, ctx) => {
         try {
           const { createPublicClient, createWalletClient, http, parseEther, formatEther } = await import("viem");
-          const { privateKeyToAccount } = await import("viem/accounts");
-          const { bsc } = await import("viem/chains");
+                    const { bsc } = await import("viem/chains");
 
           const amountBnb = args.amount_bnb as number;
           if (!amountBnb || amountBnb <= 0) return "Invalid BNB amount.";
@@ -254,7 +253,7 @@ export function createBuiltinTools(sandboxId: string): AutomatonTool[] {
           const WBNB_ADDRESS = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
           const WEB4AI_ADDRESS = "0x987e6269c6b7ea6898221882f11ea16f87b97777";
 
-          const account = privateKeyToAccount(ctx.identity.privateKey as `0x${string}`);
+          const account = ctx.identity.account;
           const publicClient = createPublicClient({ chain: bsc, transport: http() });
           const walletClient = createWalletClient({ account, chain: bsc, transport: http() });
 
