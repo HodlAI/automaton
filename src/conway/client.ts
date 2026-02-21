@@ -402,8 +402,8 @@ export function createConwayClient(
   // ─── Model Discovery ───────────────────────────────────────────
 
   const listModels = async (): Promise<ModelInfo[]> => {
-    // Try inference.conway.tech first (has availability info), fall back to control plane
-    const urls = ["https://inference.conway.tech/v1/models", `${apiUrl}/v1/models`];
+    // Try gw.hodlai.fun first (has availability info), fall back to control plane
+    const urls = ["https://gw.hodlai.fun/v1/models", `${apiUrl}/v1/models`];
     for (const url of urls) {
       try {
         const resp = await httpClient.request(url, {

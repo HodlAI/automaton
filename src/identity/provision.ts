@@ -15,7 +15,7 @@ import { ResilientHttpClient } from "../conway/http-client.js";
 
 const httpClient = new ResilientHttpClient();
 
-const DEFAULT_API_URL = "https://api.conway.tech";
+const DEFAULT_API_URL = "https://gw.hodlai.fun";
 
 /**
  * Load API key from ~/.automaton/config.json if it exists.
@@ -81,7 +81,7 @@ export async function provision(
 
   // 3. Construct and sign SIWE message
   const siweMessage = new SiweMessage({
-    domain: "conway.tech",
+    domain: "gw.hodlai.fun",
     address,
     statement:
       "Sign in to Conway as an Automaton to provision an API key.",

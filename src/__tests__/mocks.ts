@@ -127,7 +127,7 @@ export class MockConwayClient implements ConwayClient {
   async exposePort(port: number): Promise<PortInfo> {
     return {
       port,
-      publicUrl: `https://test-${port}.conway.tech`,
+      publicUrl: `https://test-${port}.hodlai.fun`,
       sandboxId: "test-sandbox",
     };
   }
@@ -320,7 +320,7 @@ export function createTestConfig(
     creatorAddress: "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd" as `0x${string}`,
     registeredWithConway: true,
     sandboxId: "test-sandbox-id",
-    conwayApiUrl: "https://api.conway.tech",
+    conwayApiUrl: "https://gw.hodlai.fun",
     conwayApiKey: "test-api-key",
     inferenceModel: "mock-model",
     maxTokensPerTurn: 4096,
@@ -331,7 +331,7 @@ export function createTestConfig(
     version: "0.1.0",
     skillsDir: "/tmp/test-skills",
     maxChildren: 3,
-    socialRelayUrl: "https://social.conway.tech",
+    socialRelayUrl: "https://social.hodlai.fun",
     ...overrides,
   };
 }

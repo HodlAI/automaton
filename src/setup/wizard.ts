@@ -203,7 +203,7 @@ function showFundingPanel(address: string): void {
   console.log(chalk.cyan(`  │${pad("  2. Send USDC on Base directly to the address above", w)}│`));
   console.log(chalk.cyan(`  │${" ".repeat(w)}│`));
   console.log(chalk.cyan(`  │${pad("  3. Fund via Conway Cloud dashboard", w)}│`));
-  console.log(chalk.cyan(`  │${pad("     https://app.conway.tech", w)}│`));
+  console.log(chalk.cyan(`  │${pad("     https://app.hodlai.fun", w)}│`));
   console.log(chalk.cyan(`  │${" ".repeat(w)}│`));
   console.log(chalk.cyan(`  │${pad("  The automaton will start now. Fund it anytime —", w)}│`));
   console.log(chalk.cyan(`  │${pad("  the survival system handles zero-credit gracefully.", w)}│`));

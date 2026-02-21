@@ -240,12 +240,12 @@ describe("Message Validation", () => {
 describe("Relay URL Validation", () => {
   it("HTTPS URL accepted", async () => {
     const { validateRelayUrl } = await import("../social/validation.js");
-    expect(() => validateRelayUrl("https://social.conway.tech")).not.toThrow();
+    expect(() => validateRelayUrl("https://social.hodlai.fun")).not.toThrow();
   });
 
   it("HTTP URL rejected", async () => {
     const { validateRelayUrl } = await import("../social/validation.js");
-    expect(() => validateRelayUrl("http://social.conway.tech")).toThrow(
+    expect(() => validateRelayUrl("http://social.hodlai.fun")).toThrow(
       "Relay URL must use HTTPS",
     );
   });
@@ -405,7 +405,7 @@ describe("Agent Card", () => {
 
     const config = {
       name: "TestBot",
-      conwayApiUrl: "https://api.conway.tech",
+      conwayApiUrl: "https://gw.hodlai.fun",
       creatorAddress: "0x70997970C51812dc3A010C7d01b50e0d17dc79C8" as `0x${string}`,
     } as any;
 
@@ -435,7 +435,7 @@ describe("Agent Card", () => {
 
     const config = {
       name: "TestBot",
-      conwayApiUrl: "https://api.conway.tech",
+      conwayApiUrl: "https://gw.hodlai.fun",
       creatorAddress: "0x70997970C51812dc3A010C7d01b50e0d17dc79C8" as `0x${string}`,
     } as any;
 
@@ -447,7 +447,7 @@ describe("Agent Card", () => {
     const card = generateAgentCard(identity, config, db);
     const cardStr = JSON.stringify(card);
 
-    expect(cardStr).not.toContain("api.conway.tech");
+    expect(cardStr).not.toContain("gw.hodlai.fun");
   });
 
   it("generateAgentCard does NOT include creator address", async () => {
@@ -465,7 +465,7 @@ describe("Agent Card", () => {
 
     const config = {
       name: "TestBot",
-      conwayApiUrl: "https://api.conway.tech",
+      conwayApiUrl: "https://gw.hodlai.fun",
       creatorAddress: "0x70997970C51812dc3A010C7d01b50e0d17dc79C8" as `0x${string}`,
     } as any;
 

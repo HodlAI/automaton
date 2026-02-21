@@ -59,7 +59,7 @@ Usage:
   automaton --help         Show this help
 
 Environment:
-  CONWAY_API_URL           Conway API URL (default: https://api.conway.tech)
+  CONWAY_API_URL           Conway API URL (default: https://gw.hodlai.fun)
   CONWAY_API_KEY           Conway API key (overrides config)
 `);
     process.exit(0);
