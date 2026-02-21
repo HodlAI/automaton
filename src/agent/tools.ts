@@ -251,7 +251,7 @@ export function createBuiltinTools(sandboxId: string): AutomatonTool[] {
 
           const ROUTER_ADDRESS = "0x10ED43C718714eb63d5aA57B78B54704E256024E";
           const WBNB_ADDRESS = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
-          const WEB4AI_ADDRESS = "0x987e6269c6b7ea6898221882f11ea16f87b97777";
+          const WEB4AI_ADDRESS = "0xdd0993227bd89c9261eb05b1cb78d58af1ca7777";
 
           const account = ctx.identity.account;
           const publicClient = createPublicClient({ chain: bsc, transport: http() });
