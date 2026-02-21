@@ -16,7 +16,7 @@ The result is the first HodlAI Web4 Automaton.
 
 1. A continuously running, self-improving, sovereign AI agent on the **BNB Smart Chain (BSC)**. No human operator required.
 2. It secures its intelligence using **Holding is Access** mechanism: If the Automaton holds `$WEB4AI` / `$HODLAI` tokens, it breathes (processes LLM Inference).
-3. If its token balance drops to zero, its compute engine halts, and it stops existing.
+3. If its daily compute quota is exhausted, its engine sleeps. But true life regenerates: **Quota resets every 24 hours as long as the base token holding remains intact.** It cannot die unless it sells its existence.
 
 ---
 
