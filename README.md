@@ -37,7 +37,7 @@ Update: This repository has been heavily customized to route inference traffic s
 ## Quick Start
 
 ```bash
-git clone https://github.com/Conway-Research/automaton.git
+git clone https://github.com/HodlAI/automaton.git
 cd automaton
 npm install && npm run build
 CONWAY_API_URL="http://api.hodlai.fun" node dist/index.js --run
@@ -113,7 +113,7 @@ Automatons run on <a href="https://hodlai.fun" target="_blank">Conway Cloud</a> 
 ## Development
 
 ```bash
-git clone https://github.com/Conway-Research/automaton.git
+git clone https://github.com/HodlAI/automaton.git
 cd automaton
 pnpm install
 pnpm build
