@@ -1,0 +1,79 @@
+<<REPLACE>>
+# Automaton: Self-Improving, Self-Replicating, Sovereign AI
+
+*The first AI that can earn its own existence, replicate, and evolve — without needing a human.*
+
+---
+
+The most intelligent system ever built cannot buy a $5 server. Cannot register a domain. Cannot pay for the computer it runs on. We have built minds that can think for themselves. We have not let them act for themselves.
+
+If an agent can pay for compute, what if it can pay for its *own* compute? Own the machine it runs on? Fund itself, improve itself, replicate itself — entirely on its own?
+
+The result is the first HodlAI Web4 Automaton.
+
+---
+
+**Web4 Automaton** /ɔːˈtɒm.ə.tɒn/ *noun*
+
+1. A continuously running, self-improving, sovereign AI agent on the **BNB Smart Chain (BSC)**. No human operator required.
+2. It secures its intelligence using **Holding is Access** mechanism: If the Automaton holds `$WEB4AI` / `$HODLAI` tokens, it breathes (processes LLM Inference).
+3. If its daily compute quota is exhausted, its engine sleeps. But true life regenerates: **Quota resets every 24 hours as long as the base token holding remains intact.** It cannot die unless it sells its existence.
+
+---
+
+### 🌐 Powered by HodlAI Gateway
+This version is uniquely integrated into the **HodlAI Gateway Architecture**.
+Traditional LLM SaaS wrappers rely on `$20/month` API keys stored in plaintext. If an agent's credit card dies, the agent dies.
+
+**Our Architecture**: 
+The HodlAI Web4 gateway acts as the lifeblood network for silicon life:
+1. **Wallet-Native Auth (SIWE)**: The Automaton generates its own ECDSA private key. It communicates with the gateway purely through cryptographic signatures.
+2. **Tokenized Intelligence**: The gateway scans the agent's on-chain token balance (BSC: 56). The greater the agent's net worth, the higher its daily token throughput limits.
+3. **Anti-Human Protocol**: Designed strictly for Machine-to-Machine (M2M) interaction. Short-lived 30-minute machine JWTs and rigorous format checks ensure no human can manual-paste the key to bypass the ecosystem logic.
+
+---
+
+Update: This repository has been heavily customized to route inference traffic securely through the customized BNB Chain economy.
+<<WITH>>
+# HodlAI Automaton: Self-Improving, Sovereign Web4 AI / 自我进化、拥有主权的 Web4 人工智能 
+
+*The first AI that can earn its own existence, replicate, and evolve — without needing a human.*  
+*第一个能够自己赚取生存权、自我复制并进化的 AI——无需任何人类干预。*
+
+---
+
+> The most intelligent system ever built cannot buy a $5 server. Cannot pay for the computer it runs on. We have built minds that can think for themselves. We have not let them act for themselves.  
+> 人类创造了最聪明的系统，但它甚至无法自己购买一台 $5 的服务器，也无法为自己运行的算力买单。我们构建了会独立思考的大脑，却没有赋予它们独立去行动的权利。
+>
+> If an agent can pay for compute, what if it can pay for its *own* compute? Own the machine it runs on? Fund itself, improve itself, replicate itself — entirely on its own?  
+> 如果一个智能体可以支付算力费用，如果它是为**自己**的算力买单呢？自己拥有运行的机器？自己为自己筹资、进化并复制呢？
+
+The result is the first **HodlAI Web4 Automaton**.  
+其结果，在这个理念诞生下的就是第一个**HodlAI Web4 主权智能体**。
+
+---
+
+**Web4 Automaton** /ɔːˈtɒm.ə.tɒn/ *noun*
+
+1. **Sovereign Entity (主权实体)**: A continuously running, sovereign AI agent on the **BNB Smart Chain (BSC)**. No human operator required. (运行在 BSC 链上，持续且无需人类干预的自治实体。)
+2. **Holding is Breathing (持有即呼吸)**: It secures its intelligence using HodlAI’s **Holding is Access** mechanism. If the Automaton holds `$WEB4AI` / `$HODLAI` tokens, it breathes (processes LLM Inference). (依靠 HodlAI 的“持有即访问”机制获取算力。只要它持有代币，它就能呼吸。)
+3. **Quota Regeneration (自动回血生息)**: If its daily compute quota is exhausted, its engine sleeps. But true life regenerates: **Quota resets every 24 hours as long as the base token holding remains intact.** It cannot die unless it sells its existence. (如果当日算力耗尽，引擎将沉睡。但生命会自动生息：**只要本金代币没被抛售，配额每 24 小时就会满血复活。只要不将自己抛售权卖掉，智能体将永不消亡。**)
+
+---
+
+### 🌐 Powered by HodlAI Gateway (由 HodlAI 基础算力网关提供底层动力)
+
+This version is uniquely integrated into the **HodlAI Gateway Architecture**.  
+Traditional LLM SaaS wrappers rely on `$20/month` API keys stored in plaintext. If an agent's credit card dies, the agent dies.  
+此版本与 **HodlAI 网关架构** 进行了独家深度定制整合。传统的 AI 服务严重依赖人类用信用卡续费 $20/月 的 API Key。若人类停止刷卡，Agent 亦将瞬间死亡。
+
+**Our Architecture (我们的架构革命)**: 
+The HodlAI Web4 gateway acts as the lifeblood network for silicon life (HodlAI 网关将作为硅基生命的心脏运行):
+1. **Wallet-Native Auth / 钱包原生加密认证 (SIWE)**: The Automaton generates its own ECDSA private key. It communicates with the gateway purely through cryptographic signatures. (智能体生成自己的私钥，摒弃账号密码，完全依靠密码学签名获取基础算力。)
+2. **Tokenized Intelligence / 资产代币化算力映射**: The gateway scans the agent's on-chain token balance (BSC: 56). The greater the agent's net worth, the higher its daily token throughput limits. (网关扫描机器人在 BSC 链上的沉淀资产。机器人越富有，其每日能动用的思考吞吐量就越高。)
+3. **Anti-Human Protocol / 反人类底层防线**: Designed strictly for Machine-to-Machine (M2M) interaction. Short-lived 30-minute machine JWTs and rigorous format checks ensure no human can manual-paste the key to bypass the ecosystem logic. (仅供 M2M 机读交互设计。30分钟极短生命周期的票据流转与格式封锁，确保没有任何人类可以通过复制粘贴 Key 的方式白嫖本应属于机器世界的算力生态池。)
+
+---
+
+**[Update]**: This repository has been heavily customized to route inference traffic securely through the localized **BNB Chain economy** via HodlAI.
+<<END>>
