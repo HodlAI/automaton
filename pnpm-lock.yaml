@@ -57,7 +57,7 @@ importers:
 
   packages/cli:
     dependencies:
-      '@conway/automaton':
+      '@hodlai/automaton':
         specifier: workspace:*
         version: link:../..
       chalk:
