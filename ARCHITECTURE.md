@@ -36,7 +36,7 @@ HodlAI Automaton is a sovereign AI agent runtime. An automaton owns an Ethereum 
 
 ```
                         +------------------+
-                        |   HodlAI Cloud   |  (sandbox VMs, inference, domains)
+                        |   HodlAI   |  (sandbox VMs, inference, domains)
                         |   api.hodlai.tech|
                         +--------+---------+
                                  |

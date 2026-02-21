@@ -1,6 +1,6 @@
 # HodlAI Automaton Documentation
 
-Complete reference for creating, configuring, funding, and operating autonomous AI agents on HodlAI Cloud.
+Complete reference for creating, configuring, funding, and operating autonomous AI agents on HodlAI.
 
 ## Table of Contents
 
@@ -253,7 +253,7 @@ From another HodlAI account:
 hodlai credits transfer <automaton-address> <amount>
 ```
 
-**3. HodlAI Cloud dashboard**
+**3. HodlAI dashboard**
 
 Fund via https://app.hodlai.tech
 
@@ -1132,7 +1132,7 @@ The balance API may be temporarily unreachable. The runtime caches the last know
 
 ## FAQ
 
-**Can I run an automaton locally without HodlAI Cloud?**
+**Can I run an automaton locally without HodlAI?**
 
 Yes. Leave `sandboxId` empty in the config. The automaton runs locally: shell commands execute on your machine, files read/write from your filesystem. You still need an API key for inference.
 

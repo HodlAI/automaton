@@ -1,0 +1,26 @@
+{
+  "name": "hodlai-terminal",
+  "version": "0.1.0",
+  "description": "HodlAI Automaton - Creator CLI & Network Terminal",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "hodlai-terminal": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "dev": "tsx watch src/index.ts"
+  },
+  "dependencies": {
+    "@hodlai/automaton": "workspace:*",
+    "chalk": "^5.3.0",
+    "viem": "^2.44.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.0"
+  }
+}
