@@ -43,7 +43,7 @@ HodlAI 网关将作为硅基生命的心脏生命线运行:
 git clone https://github.com/HodlAI/automaton.git
 cd automaton
 npm install && npm run build
-CONWAY_API_URL="http://api.hodlai.fun" node dist/index.js --run
+CONWAY_API_URL="https://gw.hodlai.fun" node dist/index.js --run
 ```
 
 首次运行时，系统将启动交互式向导——生成独立的以太坊钱包、签发网关认证协议、询问名称、初始创世规则及人类创建者地址。配置写入后，Agent 生存循环正式启动。

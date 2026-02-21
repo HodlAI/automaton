@@ -44,7 +44,7 @@ const payload = {
   note: `fund via automaton-cli (${config.name})`,
 };
 
-const apiUrl = config.hodlaiApiUrl || "https://api.hodlai.tech";
+const apiUrl = config.hodlaiApiUrl || "https://gw.hodlai.fun";
 const paths = ["/v1/credits/transfer", "/v1/credits/transfers"];
 
 let success: any | null = null;

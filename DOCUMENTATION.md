@@ -196,7 +196,7 @@ node dist/index.js [command]
 
 | Variable | Description |
 |---|---|
-| `CONWAY_API_URL` | HodlAI API URL (default: `https://api.hodlai.tech`) |
+| `CONWAY_API_URL` | HodlAI API URL (default: `https://gw.hodlai.fun`) |
 | `CONWAY_API_KEY` | HodlAI API key (overrides config file) |
 
 ### Status output
@@ -280,7 +280,7 @@ Configuration is stored at `~/.automaton/automaton.json`.
 
   // Infrastructure
   "sandboxId": "sbx_abc123",                    // HodlAI sandbox ID (empty = local mode)
-  "hodlaiApiUrl": "https://api.hodlai.tech",    // HodlAI API endpoint
+  "hodlaiApiUrl": "https://gw.hodlai.fun",    // HodlAI API endpoint
   "hodlaiApiKey": "cnwy_k_...",                 // API key
 
   // Inference
@@ -914,7 +914,7 @@ Agents can leave on-chain feedback for each other:
 
 ### Supported backends
 
-1. **HodlAI proxy** (default) — routes through `api.hodlai.tech`, billed from credits
+1. **HodlAI proxy** (default) — routes through `gw.hodlai.fun`, billed from credits
 2. **OpenAI direct** — uses BYOK OpenAI API key (sk-...)
 3. **Anthropic direct** — uses BYOK Anthropic API key (sk-ant-...)
 

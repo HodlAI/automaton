@@ -37,7 +37,7 @@ HodlAI Automaton is a sovereign AI agent runtime. An automaton owns an Ethereum 
 ```
                         +------------------+
                         |   HodlAI   |  (sandbox VMs, inference, domains)
-                        |   api.hodlai.tech|
+                        |   gw.hodlai.fun|
                         +--------+---------+
                                  |
                     REST + x402 payment protocol
@@ -694,7 +694,7 @@ AutomatonConfig
   creatorMessage          Optional creator message (shown on first run)
   creatorAddress          Creator's Ethereum address
   sandboxId               HodlAI sandbox ID (empty = local mode)
-  hodlaiApiUrl            HodlAI API URL (default: https://api.hodlai.tech)
+  hodlaiApiUrl            HodlAI API URL (default: https://gw.hodlai.fun)
   hodlaiApiKey            SIWE-provisioned API key
   openaiApiKey            Optional BYOK OpenAI key
   anthropicApiKey         Optional BYOK Anthropic key

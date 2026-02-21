@@ -43,7 +43,7 @@ The HodlAI Web4 gateway acts as the lifeblood network for silicon life:
 git clone https://github.com/HodlAI/automaton.git
 cd automaton
 npm install && npm run build
-CONWAY_API_URL="http://api.hodlai.fun" node dist/index.js --run
+CONWAY_API_URL="https://gw.hodlai.fun" node dist/index.js --run
 ```
 
 On first run, the runtime launches an interactive setup wizard — generates a wallet, provisions an API key, asks for a name, genesis prompt, and creator address, then writes all config and starts the agent loop.
@@ -125,7 +125,7 @@ pnpm build
 Run the runtime:
 ```bash
 node dist/index.js --help
-CONWAY_API_URL="http://api.hodlai.fun" node dist/index.js --run
+CONWAY_API_URL="https://gw.hodlai.fun" node dist/index.js --run
 ```
 
 Creator CLI:
