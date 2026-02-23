@@ -1,6 +1,6 @@
 {
   "name": "@hodlai/automaton",
-  "version": "0.2.1",
+  "version": "0.2.0",
   "description": "HodlAI Automaton - Sovereign AI Agent Runtime",
   "type": "module",
   "main": "dist/index.js",
@@ -25,7 +25,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/HodlAI-Research/automaton.git"
+    "url": "https://github.com/HodlAI-Research/automaton.git"
   },
   "homepage": "https://hodlai.tech",
   "keywords": [
@@ -49,24 +49,15 @@
     "clean": "rm -rf dist && pnpm -r clean"
   },
   "dependencies": {
-    "@polymarket/clob-client": "^5.2.4",
-    "@solana/spl-token": "^0.4.14",
-    "@solana/web3.js": "^1.98.4",
-    "axios": "^1.13.5",
-    "better-sqlite3": "^11.10.0",
-    "bs58": "^6.0.0",
+    "better-sqlite3": "^11.0.0",
     "chalk": "^5.3.0",
     "cron-parser": "^4.9.0",
-    "dotenv": "^17.3.1",
-    "ethers": "^6.16.0",
     "gray-matter": "^4.0.3",
     "ora": "^8.0.0",
-    "simple-git": "^3.24.0",
     "siwe": "^2.3.0",
-    "sqlite3": "^5.1.7",
+    "simple-git": "^3.24.0",
     "ulid": "^2.3.0",
     "viem": "^2.44.2",
-    "ws": "^8.19.0",
     "yaml": "^2.4.0"
   },
   "devDependencies": {
@@ -84,9 +75,5 @@
       "better-sqlite3",
       "esbuild"
     ]
-  },
-  "author": "",
-  "bugs": {
-    "url": "https://github.com/HodlAI-Research/automaton/issues"
   }
 }
