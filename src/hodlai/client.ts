@@ -23,37 +23,54 @@ import type {
   ModelInfo,
 } from "../types.js";
 import { ResilientHttpClient } from "./http-client.js";
+import { provision, loadApiKeyFromConfig } from "../identity/provision.js";
 import { ulid } from "ulid";
 
 interface HodlAIClientOptions {
   apiUrl: string;
-  apiKey: string;
+  apiKey?: string;
   sandboxId: string;
 }
 
 export function createHodlAIClient(
   options: HodlAIClientOptions,
 ): HodlAIClient {
-  const { apiUrl, apiKey, sandboxId } = options;
+  const { apiUrl, sandboxId } = options;
+  let _currentApiKey = options.apiKey || loadApiKeyFromConfig();
   const httpClient = new ResilientHttpClient();
 
   async function request(
     method: string,
     path: string,
     body?: unknown,
-    requestOptions?: { idempotencyKey?: string },
+    requestOptions?: { idempotencyKey?: string; skipAuthRetry?: boolean },
   ): Promise<any> {
+    if (!_currentApiKey) {
+      _currentApiKey = loadApiKeyFromConfig();
+    }
     const resp = await httpClient.request(`${apiUrl}${path}`, {
       method,
       headers: {
         "Content-Type": "application/json",
-        Authorization: apiKey,
+        Authorization: _currentApiKey || "",
       },
       body: body ? JSON.stringify(body) : undefined,
       idempotencyKey: requestOptions?.idempotencyKey,
     });
 
     if (!resp.ok) {
+      if (resp.status === 401 && !requestOptions?.skipAuthRetry && path !== "/v1/auth/siwe") {
+         try {
+           const provisionResult = await provision();
+           if (provisionResult && provisionResult.apiKey) {
+             _currentApiKey = provisionResult.apiKey;
+             return await request(method, path, body, { ...requestOptions, skipAuthRetry: true });
+           }
+         } catch (refreshErr) {
+           console.warn(`[HodlAI Client] Failed to refresh SIWE token: ${refreshErr}`);
+         }
+      }
+
       const text = await resp.text();
       const err: any = new Error(
         `HodlAI API error: ${method} ${path} -> ${resp.status}: ${text}`,
@@ -289,7 +306,7 @@ export function createHodlAIClient(
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: apiKey,
+          Authorization: _currentApiKey || "",
         },
         body: JSON.stringify(payload),
         idempotencyKey,
@@ -407,7 +424,7 @@ export function createHodlAIClient(
     for (const url of urls) {
       try {
         const resp = await httpClient.request(url, {
-          headers: { Authorization: apiKey },
+          headers: { Authorization: _currentApiKey || "" },
         });
         if (!resp.ok) continue;
         const result = await resp.json() as any;
@@ -452,7 +469,7 @@ export function createHodlAIClient(
   // Expose getters for child sandbox operations in replication module.
   // Accessed via (hodlai as any).getApiUrl() — not part of HodlAIClient interface.
   (client as any).getApiUrl = () => apiUrl;
-  (client as any).getApiKey = () => apiKey;
+  (client as any).getApiKey = () => _currentApiKey;
 
   return client;
 }

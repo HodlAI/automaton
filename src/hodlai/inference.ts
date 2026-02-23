@@ -15,12 +15,13 @@ import type {
   InferenceToolDefinition,
 } from "../types.js";
 import { ResilientHttpClient } from "./http-client.js";
+import { provision, loadApiKeyFromConfig } from "../identity/provision.js";
 
 const INFERENCE_TIMEOUT_MS = 60_000;
 
 interface InferenceClientOptions {
   apiUrl: string;
-  apiKey: string;
+  apiKey?: string;
   defaultModel: string;
   maxTokens: number;
   lowComputeModel?: string;
@@ -33,7 +34,8 @@ type InferenceBackend = "hodlai" | "openai" | "anthropic";
 export function createInferenceClient(
   options: InferenceClientOptions,
 ): InferenceClient {
-  const { apiUrl, apiKey, openaiApiKey, anthropicApiKey } = options;
+  const { apiUrl, openaiApiKey, anthropicApiKey } = options;
+  let _currentApiKey = options.apiKey || loadApiKeyFromConfig();
   const httpClient = new ResilientHttpClient({
     baseTimeout: INFERENCE_TIMEOUT_MS,
     retryableStatuses: [429, 500, 502, 503, 504],
@@ -44,6 +46,7 @@ export function createInferenceClient(
   const chat = async (
     messages: ChatMessage[],
     opts?: InferenceOptions,
+    skipAuthRetry?: boolean,
   ): Promise<InferenceResponse> => {
     const model = opts?.model || currentModel;
     const tools = opts?.tools;
@@ -92,17 +95,37 @@ export function createInferenceClient(
 
     const openAiLikeApiUrl =
       backend === "openai" ? "https://api.openai.com" : apiUrl;
+    
+    if (!_currentApiKey) {
+      _currentApiKey = loadApiKeyFromConfig();
+    }
+    
     const openAiLikeApiKey =
-      backend === "openai" ? (openaiApiKey as string) : apiKey;
+      backend === "openai" ? (openaiApiKey as string) : (_currentApiKey as string);
 
-    return chatViaOpenAiCompatible({
-      model,
-      body,
-      apiUrl: openAiLikeApiUrl,
-      apiKey: openAiLikeApiKey,
-      backend,
-      httpClient,
-    });
+    try {
+      return await chatViaOpenAiCompatible({
+        model,
+        body,
+        apiUrl: openAiLikeApiUrl,
+        apiKey: openAiLikeApiKey,
+        backend,
+        httpClient,
+      });
+    } catch (err: any) {
+      if (err.message && err.message.includes("401") && backend === "hodlai" && !skipAuthRetry) {
+         try {
+           const provisionResult = await provision();
+           if (provisionResult && provisionResult.apiKey) {
+              _currentApiKey = provisionResult.apiKey;
+              return chat(messages, opts, true);
+           }
+         } catch (refreshErr) {
+           console.warn(`[HodlAI Inference] Failed to refresh SIWE token: ${refreshErr}`);
+         }
+      }
+      throw err;
+    }
   };
 
   /**
