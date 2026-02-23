@@ -1,6 +1,6 @@
 {
   "name": "hodlai-terminal",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "HodlAI Automaton - Creator CLI & Network Terminal",
   "type": "module",
   "main": "dist/index.js",
